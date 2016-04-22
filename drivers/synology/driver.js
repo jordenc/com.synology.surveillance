@@ -27,21 +27,6 @@ module.exports.pair = function (socket) {
 
 		Homey.log("Synology Surveillance Station app - list_devices called" );
 		
-		/*
-			for (var key in tempdevices) {
-				
-				if (tempdevices.hasOwnProperty(key)) {
-					Homey.log(key + " -> " + tempdevices[key]);
-	  			}
-	  			
-			}
-		*/
-		
-		//camIP
-		//camName
-		//camIdOnRecServer
-		//camModel
-		
 		for (var key in tempdevices) {
 			
 			var device = tempdevices[key];
@@ -60,41 +45,10 @@ module.exports.pair = function (socket) {
 					name: device["name"]
 				}
 			);
-				
-			//Homey.log ('key ' + key + ' = ' + JSON.stringify(device));
-			/*
-			for (var key in device) {
-				
-				if (device.hasOwnProperty(key)) {
-					Homey.log(key + " -> " + device[key]);
-	  			}
-	  			
-	  			devices.push(
-					[{
-						data: {
-							id			: device[key]["id"],
-							ipaddress 	: device[key]["host"],
-						},
-						name: device[key]["name"]
-					}]	
-				);
-	  			
-			}
-			*/
-			//Homey.log ('Adding ' + tempdevices[key]["camName"]);
-		
-
 			
 		}
-		//eachRecursive (tempdevices);
-		/*
-		var devices = [{
-			data: {
-				id			: tempIP,
-				ipaddress 	: tempIP
-			}
-		}];
-		*/
+
+
 		Homey.log ('callback with ' + JSON.stringify(devices));
 		callback (null, devices);
 
@@ -124,8 +78,6 @@ module.exports.pair = function (socket) {
 		}, function(err, data) {
 			if (err) return console.error(err);
 			
-			//Homey.log(data);
-//			tempdevices = JSON.parse(data);
 			tempdevices = data.data.cameras;
 			
 			socket.emit ('continue', null);
@@ -142,7 +94,7 @@ module.exports.pair = function (socket) {
 // flow action handlers
 
 Homey.manager('flow').on('action.startRecording', function( callback, args ){
-	sendCommand('%7b%22COMMAND%22:%22CLEAN_START%22%7d', args.device.ipaddress, callback); 
+	
 });
 
 // CONDITIONS:
