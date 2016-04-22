@@ -11,3 +11,5 @@ The following cards are available:
 - [ACTION] Start recording
 - [ACTION] Stop recording
 - [ACTION] Take snapshot (will go to /USERNAME/@Snapshot/ on your Synology)
+
+Use at your own risk, I accept no responsibility for any damages caused by using this script.
