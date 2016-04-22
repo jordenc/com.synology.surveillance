@@ -10,3 +10,4 @@ To be able to use this app, you need to supply the app with the IP of the Synolo
 The following cards are available:
 - [ACTION] Start recording
 - [ACTION] Stop recording
+- [ACTION] Take snapshot (will go to /USERNAME/@Snapshot/ on your Synology)

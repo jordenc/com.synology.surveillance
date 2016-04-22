@@ -174,7 +174,7 @@ Homey.manager('flow').on('action.startRecording', function( callback, args ){
 			
 			Homey.log ('result: ' + JSON.stringify(data));
 			
-			if (data.success) callback (null, true);
+			if (data.success) callback (null, true); else callback (null, false);
 			
 		});
 });
@@ -198,18 +198,18 @@ Homey.manager('flow').on('action.stopRecording', function( callback, args ){
 			
 			Homey.log ('result: ' + JSON.stringify(data));
 			
-			if (data.success) callback (null, true);
+			if (data.success) callback (null, true); else callback (null, false);
 			
 		});
 });
 
 Homey.manager('flow').on('action.snapshot', function (callback, args) {
-	
-	//camId=1&version="1"&blSave=true&api="SYNO.SurveillanceStation.SnapShot"&dsId=0&method="TakeSnapshot"
 
+	Homey.log('take snapshot - ' + snappath);
+	
 	syno.query(snappath, {
 			api    		: 'SYNO.SurveillanceStation.SnapShot',
-			version		: 2,
+			version		: 1,
 			method 		: 'TakeSnapshot',
 			camId  		: args.device.id,
 			blSave		: true,
@@ -218,6 +218,8 @@ Homey.manager('flow').on('action.snapshot', function (callback, args) {
 			
 		}, function(err, data) {
 			
+			
+			//if blSave is set to false, you get data.imageData with binary data of the image
 			if (err) {
 				Homey.log (err);
 				callback (null, false);
@@ -225,7 +227,7 @@ Homey.manager('flow').on('action.snapshot', function (callback, args) {
 			
 			Homey.log ('result: ' + JSON.stringify(data));
 			
-			if (data.success) callback (null, true);
+			if (data.success) callback (null, true); else callback (null, false);
 			
 		});
 
