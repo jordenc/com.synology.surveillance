@@ -4,7 +4,7 @@ var http = require('http');
 var Synology = require('synology');
 var tempdevices;
 var devices = [];
-var recordpath;
+var recordpath, snappath;
 var sid;
 
 module.exports.pair = function (socket) {
@@ -118,7 +118,7 @@ Homey.log('should be connected!');
 	
 	});
 	
-	
+	//get recording API path
 	syno.query('/webapi/query.cgi', {
 		api    	: 'SYNO.API.Info',
 		version	: 1,
@@ -133,6 +133,23 @@ Homey.log('should be connected!');
 		recordpath = '/webapi/' + data["data"]["SYNO.SurveillanceStation.ExternalRecording"]["path"];
 	
 	});
+	
+	//get snapshot API path
+	syno.query('/webapi/query.cgi', {
+		api    	: 'SYNO.API.Info',
+		version	: 1,
+		method 	: 'query',
+		query  	: 'SYNO.SurveillanceStation.SnapShot',
+		'_sid' 	: sid
+	}, function(err, data) {
+		if (err) Homey.log(err);
+		
+		Homey.log(data);
+		
+		snappath = '/webapi/' + data["data"]["SYNO.SurveillanceStation.SnapShot"]["path"];
+	
+	});
+
 	
 }
 
@@ -186,6 +203,34 @@ Homey.manager('flow').on('action.stopRecording', function( callback, args ){
 		});
 });
 
+Homey.manager('flow').on('action.snapshot', function (callback, args) {
+	
+	//camId=1&version="1"&blSave=true&api="SYNO.SurveillanceStation.SnapShot"&dsId=0&method="TakeSnapshot"
+
+	syno.query(snappath, {
+			api    		: 'SYNO.SurveillanceStation.SnapShot',
+			version		: 2,
+			method 		: 'TakeSnapshot',
+			camId  		: args.device.id,
+			blSave		: true,
+			dsId		: 0,
+			'_sid' 		: sid
+			
+		}, function(err, data) {
+			
+			if (err) {
+				Homey.log (err);
+				callback (null, false);
+			}
+			
+			Homey.log ('result: ' + JSON.stringify(data));
+			
+			if (data.success) callback (null, true);
+			
+		});
+
+	
+});
 // CONDITIONS:
 /*
 Homey.manager('flow').on('condition.recording', function(callback, args){
