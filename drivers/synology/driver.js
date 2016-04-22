@@ -1,7 +1,6 @@
 "use strict";
 
 var http = require('http');
-var tempIP = '';
 var Synology = require('node-synology-surveillance');
 
 module.exports.pair = function (socket) {
@@ -28,13 +27,21 @@ module.exports.pair = function (socket) {
 	socket.on('get_devices', function (data, callback) {
 
 		// Set passed pair settings in variables
-		tempIP = data.ipaddress;
-		Homey.log ( "Synology Surveillance Station app - got get_devices from front-end, tempIP =" + tempIP );
+		var hostname = data.hostname;
+		var username = data.username;
+		var password = data.password;
+		
+		Homey.log ( "Synology Surveillance Station app - got get_devices from front-end, hostname =" + hostname );
 
 		var syno = new Synology({
-		    host    : 'localhost',
-		    user    : 'user',
-		    password: 'userpwd'
+		    host    : hostname,
+		    user    : username,
+		    password: password
+		});
+		
+		syno.surveillance.info.get_info(function(err, data){
+		    if (err) throw err;
+		    Homey.log(data);
 		});
 
 

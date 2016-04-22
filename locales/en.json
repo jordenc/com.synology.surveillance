@@ -1,12 +1,15 @@
 {
 	"pair": {
 		"start": {
-			"intro": "Enter the IP address of your Synology NAS.",
+			"intro": "Enter the details of your Synology NAS.",
 			"title": "Finding device...",
 			"error": "An error has occurred.",
-			"required": "IP address is a required value.",
-			"ipAddress": "IP address",
-			"saveSettings": "Save settings"
+			"required": "All fields are required.",
+			"hostname": "Host name",
+			"username": "Username",
+			"password": "Password",
+			"saveSettings": "Save settings",
+			"note": "Please make sure to provide a username that does not require 2 factor authentication!"
 		}
   	}
 }

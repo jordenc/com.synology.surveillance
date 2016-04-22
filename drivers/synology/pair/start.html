@@ -24,15 +24,17 @@ Homey.on('continue', function( success, callback ){
 function saveSettings () {
 
 	// variables
-	var inputIPAddress = document.getElementById( 'ipAddress' ).value;
+	var inputhostname = document.getElementById( 'hostname' ).value;
+	var inputusername = document.getElementById( 'username' ).value;
+	var inputpassword = document.getElementById( 'password' ).value;
 	
-	// If required values are filled in
-	// FIXME: should check if this is a real IPv4 address
-	if (inputIPAddress != '') {
+	if (inputhostname != '' && inputusername != '' && inputpassword != '') {
 
 		// Build data array
 		var data = {
-			ipaddress: inputIPAddress
+			hostname: inputhostname,
+			username: inputusername,
+			password: inputpassword
 		};
 
 		// Continue to back-end, pass along data
@@ -50,30 +52,38 @@ function saveSettings () {
 
 </script>
 
-    <p data-i18n="pair.start.intro">enter IP address</p>
+    <p data-i18n="pair.start.intro">Enter the details of your Synology NAS.</p>
 
 		<style>
-			.pairSettings {
-				font-size:16px;
-				border:none;
-			}
-
 			input {
 				font-size:16px;
+				width: 200px;
+				border: 1px dotted #000;
 			}
-
 		</style>
 
 		<table class="pairSettings">
 			<tr>
-				<td style="width:100px;" data-i18n="pair.start.ipAddress">IP</td>
-				<td><input id="ipAddress" type="text" value="" placeholder="192.168.1.123"/></td>
+				<td style="width:100px;" data-i18n="pair.start.hostname">Hostname</td>
+				<td><input id="hostname" type="text" value="chamidmedia.quickconnect.to" placeholder="mysynology.quickconnect.to"/></td>
+			</tr>
+			<tr>
+				<td style="width:100px;" data-i18n="pair.start.username">Username</td>
+				<td><input id="username" type="text" value="admin" placeholder="admin"/></td>
+			</tr>
+			<tr>
+				<td style="width:100px;" data-i18n="pair.start.password">Password</td>
+				<td><input id="password" type="password" value="" placeholder=""/></td>
 			</tr>
 		</table>
 
 		<p>
 		&nbsp;
 	  </p>
+	  
+	   <p data-i18n="pair.start.note">Please make sure to provide a username that does not require 2 factor authentication!</p>
+	   
+	   <p>&nbsp;</p>
 
 <fieldset>
     <button class="button" data-i18n="pair.start.saveSettings" onclick="saveSettings()">Save</button>

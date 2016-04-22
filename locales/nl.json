@@ -1,12 +1,15 @@
 {
 	"pair": {
 		"start": {
-			"intro": "Vul het IP-adres van uw Synology NAS in.",
+			"intro": "Vul de gegevens van uw Synology NAS in.",
 			"title": "Apparaat zoeken...",
 			"error": "Er is een fout opgetreden.",
-			"required": "IP adres is verplicht.",
-			"ipAddress": "IP adres",
-			"saveSettings": "Gegevens opslaan"
+			"required": "Alle velden zijn verplicht.",
+			"hostname": "Host name",
+			"username": "Username",
+			"password": "Password",
+			"saveSettings": "Gegevens opslaan",
+			"note": "Zorg ervoor dat de genoemde gebruikersnaam geen 2 factor authenticatie vereist!"
 		}
 	}	
 }
