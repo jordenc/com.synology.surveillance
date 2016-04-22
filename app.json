@@ -30,8 +30,8 @@
 	        	"nl": "Synology NAS"  
             },
             "images": {
-              	"large": "drivers/vacuum/assets/images/large.jpg",
-			  	"small": "drivers/vacuum/assets/images/small.jpg"
+              	"large": "drivers/synology/assets/images/large.jpg",
+			  	"small": "drivers/synology/assets/images/small.jpg"
           	},
             "class": "other",
             "capabilities": [ "" ],
