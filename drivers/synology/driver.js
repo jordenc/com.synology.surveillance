@@ -80,6 +80,10 @@ module.exports.pair = function (socket) {
 			
 			tempdevices = data.data.cameras;
 			
+			Homey.manager('settings').set('hostname', hostname);
+			Homey.manager('settings').set('username', username);
+			Homey.manager('settings').set('password', password);
+			
 			socket.emit ('continue', null);
 		});
 		
@@ -90,6 +94,19 @@ module.exports.pair = function (socket) {
 		Homey.log("Synology Surveillance Station - User aborted pairing, or pairing is finished");
 	})
 }
+
+var hostname = Homey.manager('settings').get('hostname');
+var username = Homey.manager('settings').get('username');
+var password = Homey.manager('settings').get('password');
+
+Homey.log('connecting to Synology: ' + hostname);
+
+var syno = new Synology({
+    host    : hostname,
+    user    : username,
+    password: password
+});
+Homey.log('should be connected!');
 
 // flow action handlers
 Homey.manager('flow').on('action.startRecording', function( callback, args ){
@@ -108,7 +125,9 @@ Homey.manager('flow').on('action.startRecording', function( callback, args ){
 				callback (null, false);
 			}
 			
-			if (data.success) callback (null, true);
+			Homey.log ('result: ' + JSON.stringify(data));
+			
+			if (data.data.success) callback (null, true);
 			
 		});
 });
@@ -129,7 +148,9 @@ Homey.manager('flow').on('action.stopRecording', function( callback, args ){
 				callback (null, false);
 			}
 			
-			if (data.success) callback (null, true);
+			Homey.log ('result: ' + JSON.stringify(data));
+			
+			if (data.data.success) callback (null, true);
 			
 		});
 });
