@@ -72,7 +72,26 @@
 	                "filter": "driver_id=synology"
 	              }
 	        ]
-        }        
+        },
+        "actions": [
+        {
+            "id": "stopRecording",
+            "title": {
+                "en": "Stop recording",
+                "nl": "Stop opname"
+            },
+            "args": [
+	              {
+	                "name": "device",
+	                "type": "device",
+	                "placeholder": {
+	                  "en": "Select camera",
+	                  "nl": "Selecteer camera"
+	                },
+	                "filter": "driver_id=synology"
+	              }
+	        ]
+        }    
        ],
         "conditions": [
         {

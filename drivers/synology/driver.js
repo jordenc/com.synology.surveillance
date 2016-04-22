@@ -38,7 +38,7 @@ module.exports.pair = function (socket) {
 			devices.push(
 				{
 					data: {
-						id			: device["host"],
+						id			: device["id"],
 						ipaddress 	: device["host"],
 						model		: device["model"]
 					},
@@ -92,9 +92,46 @@ module.exports.pair = function (socket) {
 }
 
 // flow action handlers
-
 Homey.manager('flow').on('action.startRecording', function( callback, args ){
 	
+	syno.query('/webapi/SurveillanceStation/extrecord.cgi', {
+			api    		: 'SYNO.SurveillanceStation.ExternalRecording',
+			version		: 2,
+			method 		: 'Record',
+			cameraId  	: args.device.id,
+			action		: 'start'
+			
+		}, function(err, data) {
+			
+			if (err) {
+				Homey.log (err);
+				callback (null, false);
+			}
+			
+			if (data.success) callback (null, true);
+			
+		});
+});
+
+Homey.manager('flow').on('action.stopRecording', function( callback, args ){
+	
+	syno.query('/webapi/SurveillanceStation/extrecord.cgi', {
+			api    		: 'SYNO.SurveillanceStation.ExternalRecording',
+			version		: 2,
+			method 		: 'Record',
+			cameraId  	: args.device.id,
+			action		: 'stop'
+			
+		}, function(err, data) {
+			
+			if (err) {
+				Homey.log (err);
+				callback (null, false);
+			}
+			
+			if (data.success) callback (null, true);
+			
+		});
 });
 
 // CONDITIONS:

@@ -2,10 +2,10 @@
 	"pair": {
 		"start": {
 			"intro": "Enter the details of your Synology NAS.",
-			"title": "Finding device...",
+			"title": "Add device...",
 			"error": "An error has occurred.",
 			"required": "All fields are required.",
-			"hostname": "Host name",
+			"hostname": "IP address",
 			"username": "Username",
 			"password": "Password",
 			"saveSettings": "Save settings",
