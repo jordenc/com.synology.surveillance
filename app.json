@@ -73,8 +73,7 @@
 	              }
 	        ]
         },
-        "actions": [
-        {
+		{
             "id": "stopRecording",
             "title": {
                 "en": "Stop recording",
