@@ -89,6 +89,11 @@ var hostname = Homey.manager('settings').get('hostname');
 var username = Homey.manager('settings').get('username');
 var password = Homey.manager('settings').get('password');
 
+if ( !hostname || !username || !password) {
+	
+	Homey.log ('Either hostname, username or password is not yet filled in');
+	
+} else {
 var syno = new Synology({
     host    : hostname,
     user    : username,
@@ -96,38 +101,40 @@ var syno = new Synology({
 });
 Homey.log('should be connected!');
 
-syno.query('/webapi/auth.cgi', {
-	api    		: 'SYNO.API.Auth',
-	version		: 2,
-	method 		: 'Login',
-	account		: username,
-	passwd		: password,
-	session		: 'SurveillanceStation',
-	format		: 'sid'
+	syno.query('/webapi/auth.cgi', {
+		api    		: 'SYNO.API.Auth',
+		version		: 2,
+		method 		: 'Login',
+		account		: username,
+		passwd		: password,
+		session		: 'SurveillanceStation',
+		format		: 'sid'
+		
+	}, function(err, data) {
+		if (err) Homey.log(err);
+		
+		Homey.log(data);
+		sid = data.data.sid;
 	
-}, function(err, data) {
-	if (err) Homey.log(err);
+	});
 	
-	Homey.log(data);
-	sid = data.data.sid;
-
-});
-
-
-syno.query('/webapi/query.cgi', {
-	api    	: 'SYNO.API.Info',
-	version	: 1,
-	method 	: 'query',
-	query  	: 'SYNO.SurveillanceStation.ExternalRecording',
-	'_sid' 	: sid
-}, function(err, data) {
-	if (err) Homey.log(err);
 	
-	Homey.log(data);
+	syno.query('/webapi/query.cgi', {
+		api    	: 'SYNO.API.Info',
+		version	: 1,
+		method 	: 'query',
+		query  	: 'SYNO.SurveillanceStation.ExternalRecording',
+		'_sid' 	: sid
+	}, function(err, data) {
+		if (err) Homey.log(err);
+		
+		Homey.log(data);
+		
+		recordpath = '/webapi/' + data["data"]["SYNO.SurveillanceStation.ExternalRecording"]["path"];
 	
-	recordpath = '/webapi/' + data["data"]["SYNO.SurveillanceStation.ExternalRecording"]["path"];
-
-});
+	});
+	
+}
 
 
 // flow action handlers
