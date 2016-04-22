@@ -4,20 +4,10 @@ var http = require('http');
 var Synology = require('synology');
 var tempdevices;
 var devices = [];
+var recordpath;
+var sid;
 
 module.exports.pair = function (socket) {
-	
-	function eachRecursive(obj)
-{
-    for (var k in obj)
-    {
-        if (typeof obj[k] == "object" && obj[k] !== null)
-            eachRecursive(obj[k]);
-        else
-            // do something... 
-            Homey.log (k + ' => ' + obj[k]);
-    }
-}
 
 	// socket is a direct channel to the front-end
 
@@ -99,8 +89,6 @@ var hostname = Homey.manager('settings').get('hostname');
 var username = Homey.manager('settings').get('username');
 var password = Homey.manager('settings').get('password');
 
-Homey.log('connecting to Synology: ' + hostname);
-
 var syno = new Synology({
     host    : hostname,
     user    : username,
@@ -108,15 +96,50 @@ var syno = new Synology({
 });
 Homey.log('should be connected!');
 
+syno.query('/webapi/auth.cgi', {
+	api    		: 'SYNO.API.Auth',
+	version		: 2,
+	method 		: 'Login',
+	account		: username,
+	passwd		: password,
+	session		: 'SurveillanceStation',
+	format		: 'sid'
+	
+}, function(err, data) {
+	if (err) Homey.log(err);
+	
+	Homey.log(data);
+	sid = data.data.sid;
+
+});
+
+
+syno.query('/webapi/query.cgi', {
+	api    	: 'SYNO.API.Info',
+	version	: 1,
+	method 	: 'query',
+	query  	: 'SYNO.SurveillanceStation.ExternalRecording',
+	'_sid' 	: sid
+}, function(err, data) {
+	if (err) Homey.log(err);
+	
+	Homey.log(data);
+	
+	recordpath = '/webapi/' + data["data"]["SYNO.SurveillanceStation.ExternalRecording"]["path"];
+
+});
+
+
 // flow action handlers
 Homey.manager('flow').on('action.startRecording', function( callback, args ){
 	
-	syno.query('/webapi/SurveillanceStation/extrecord.cgi', {
+	syno.query(recordpath, {
 			api    		: 'SYNO.SurveillanceStation.ExternalRecording',
 			version		: 2,
 			method 		: 'Record',
 			cameraId  	: args.device.id,
-			action		: 'start'
+			action		: 'start',
+			'_sid' 	: sid
 			
 		}, function(err, data) {
 			
@@ -127,19 +150,20 @@ Homey.manager('flow').on('action.startRecording', function( callback, args ){
 			
 			Homey.log ('result: ' + JSON.stringify(data));
 			
-			if (data.data.success) callback (null, true);
+			if (data.success) callback (null, true);
 			
 		});
 });
 
 Homey.manager('flow').on('action.stopRecording', function( callback, args ){
 	
-	syno.query('/webapi/SurveillanceStation/extrecord.cgi', {
+	syno.query(recordpath, {
 			api    		: 'SYNO.SurveillanceStation.ExternalRecording',
 			version		: 2,
 			method 		: 'Record',
 			cameraId  	: args.device.id,
-			action		: 'stop'
+			action		: 'stop',
+			'_sid' 	: sid
 			
 		}, function(err, data) {
 			
@@ -150,7 +174,7 @@ Homey.manager('flow').on('action.stopRecording', function( callback, args ){
 			
 			Homey.log ('result: ' + JSON.stringify(data));
 			
-			if (data.data.success) callback (null, true);
+			if (data.success) callback (null, true);
 			
 		});
 });
