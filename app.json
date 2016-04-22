@@ -1,0 +1,99 @@
+{
+    "id": "com.synology.surveillance",
+    "name": {
+        "en": "Synology Surveillance Station",
+        "nl": "Synology Surveillance Station"
+    },
+    "version": "0.0.1",
+    "compatibility": ">=0.8.30",
+    "author": {
+        "name": "Chamid Media",
+        "email": "info@chamidmedia.nl"
+    },
+    "images": {
+      "large": "./assets/images/large.jpg",
+      "small": "./assets/images/small.jpg"
+    },
+    "category": "appliances",
+    "description": {
+    	"en": "Control Synology Surveillance Station",
+		"nl": "Bestuur je Synology Surveillance Station"
+    },
+    "dependencies": {
+    		"net": "*"
+    },
+    "drivers": [
+        {
+            "id": "synology",
+            "name": {
+	        	"en": "Synology NAS",
+	        	"nl": "Synology NAS"  
+            },
+            "images": {
+              	"large": "drivers/vacuum/assets/images/large.jpg",
+			  	"small": "drivers/vacuum/assets/images/small.jpg"
+          	},
+            "class": "other",
+            "capabilities": [ "" ],
+            "pair": [
+                {
+                    "id": "start"
+                },
+                {
+                    "id": "list_devices",
+                    "template": "list_devices",
+                    "navigation": {
+                        "next": "add_nas"
+                    }
+                },
+                {
+                    "id": "add_nas",
+                    "template": "add_devices"
+                }
+            ]
+        }
+    ], 
+    "flow": {
+        "actions": [
+        {
+            "id": "startRecording",
+            "title": {
+                "en": "Start recording",
+                "nl": "Start opname"
+            },
+            "args": [
+	              {
+	                "name": "device",
+	                "type": "device",
+	                "placeholder": {
+	                  "en": "Select camera",
+	                  "nl": "Selecteer camera"
+	                },
+	                "filter": "driver_id=synology"
+	              }
+	        ]
+        }        
+       ],
+        "conditions": [
+        {
+            "id": "recording",
+            "title": {
+                "en": "!{{is|is not}} recording",
+                "nl": "!{{is|is niet}} aan het opnemen"
+            },
+            "args": [
+	              {
+	                "name": "device",
+	                "type": "device",
+	                "placeholder": {
+	                  "en": "Select camera",
+	                  "nl": "Selecteer camera"
+	                },
+	                "filter": "driver_id=synology"
+	              }
+	        ]
+        }
+       ]
+
+    }
+}
