@@ -85,13 +85,6 @@
             Homey.set('mail_port', document.getElementById('port').value);
             Homey.set('mail_sender', document.getElementById('sender').value);
             
-           Homey.api( 'POST', '/updatesettings', {
-			    "mail_user": document.getElementById('username').value
-			}, function( err, result ){
-			    if( err ) return console.error( err );
-			    console.log( result );
-			});
-            
             console.log ("saved the settings!");
         }
         </script>

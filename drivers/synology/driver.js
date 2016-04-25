@@ -7,15 +7,24 @@ var tempdevices;
 var devices = [];
 var recordpath, snappath;
 var sid;
+var mail_user, mail_pass, mail_host, mail_port, mail_from;
+
+Homey.manager('settings').on('set', function (name) {
+
+	Homey.log('variable ' + name + ' has been set');
+	updatesettings();
+	
+});
+
 
 function updatesettings() {
 	
 	//mail settings (if any)
-	var mail_user = Homey.manager('settings').get('mail_user');
-	var mail_pass = Homey.manager('settings').get('mail_password');
-	var mail_host = Homey.manager('settings').get('mail_host');
-	var mail_port = Homey.manager('settings').get('mail_port');
-	var mail_from = Homey.manager('settings').get('mail_from');
+	mail_user = Homey.manager('settings').get('mail_user');
+	mail_pass = Homey.manager('settings').get('mail_password');
+	mail_host = Homey.manager('settings').get('mail_host');
+	mail_port = Homey.manager('settings').get('mail_port');
+	mail_from = Homey.manager('settings').get('mail_from');
 
 	Homey.log('Backend settings updated');
 
@@ -300,12 +309,12 @@ Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 		        ]
 		    }*/
 		    
-		    Homey.log ('Logging in with SMTP to ' + mail_host + ':' + mail_port + ' - user ' + mail_user + ' / pass: ' + mail_pass);
+		    //Homey.log ('Logging in with SMTP to ' + mail_host + ':' + mail_port + ' - user ' + mail_user + ' / pass: ' + mail_pass);
 		    
 		    var mailOptions = {
 				
-				from: mail_from,
-			    to: args.device.mailto,
+				from: 'Homey <' + mail_from + '>',
+			    to: args.mailto,
 			    subject: 'Snapshot from camera #' + args.device.id,
 			    text: '',
 			    html: '',
@@ -330,46 +339,6 @@ Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 		});
 	
 });
-
-/*
-function sendsnapmail(buffer, mail_host, mail_port, mail_user, mail_pass, mail_from, mail_to, camID) {
-	
-	var transporter = nodemailer.createTransport(
-	{
-		host: mail_host,
-		port: mail_port,
-		auth: {
-			user: mail_user,
-			pass: mail_pass
-		},
-		tls: {rejectUnauthorized: false} 
-	});
-	var mailOptions = {
-		
-		from: mail_from,
-	    to: mail_to,
-	    subject: 'Snapshot from camera #' + camID,
-	    text: '',
-	    html: ''
-    
-	    attachments: [
-
-        {   
-	        filename: 'snapshot.jpg',
-            content: new Buffer(buffer, 'base64')
-        }
-        ]
-    }
-    
-    transporter.sendMail(mailOptions, function(error, info){
-	    if(error){
-	        return Homey.log(error);
-	    }
-	    Homey.log('Message sent: ' + info.response);
-	});
-
-}
-*/
 
 // CONDITIONS:
 /*
