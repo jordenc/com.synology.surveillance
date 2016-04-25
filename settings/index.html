@@ -2,6 +2,18 @@
 <html>
     <head>
 		<script type="text/javascript" src="/manager/webserver/assets/js/jquery.js"></script>
+		
+		<style>
+			input {
+				font-size:16px;
+				width: 200px;
+				border: 1px dotted #000;
+			}
+			label {
+				width: 150px;
+			}
+		</style>
+		
     </head>
     <body>
 
@@ -27,6 +39,10 @@
                 <label for="port" data-i18n="settings.port">SMTP port</label>
                 <input id="port" type="text" value="" placeholder="25"/>
             </div>
+            <div class="field row">
+                <label for="sender" data-i18n="settings.sender">Sender address</label>
+                <input id="sender" type="text" value="" placeholder="you@yourdomain.com"/>
+            </div>
 
         </fieldset>
 
@@ -38,7 +54,28 @@
 		       if( err ) return console.error('Could not get username', err);
 		       $('#username').val(username); 
 		    });
-            Homey.ready()
+		    
+		    Homey.get('mail_password', function(err, password){
+		       if( err ) return console.error('Could not get mail_password', err);
+		       $('#password').val(password); 
+		    });
+		    
+		    Homey.get('mail_host', function(err, mail_host){
+		       if( err ) return console.error('Could not get mail_host', err);
+		       $('#hostname').val(mail_host); 
+		    });
+		    
+		    Homey.get('mail_port', function(err, mail_port){
+		       if( err ) return console.error('Could not get mail_port', err);
+		       $('#port').val(mail_port); 
+		    });
+		    
+		    Homey.get('mail_sender', function(err, mail_sender){
+		       if( err ) return console.error('Could not get mail_sender', err);
+		       $('#sender').val(mail_sender); 
+		    });
+		    
+            Homey.ready();
         }
 
         function save() {
@@ -46,6 +83,9 @@
             Homey.set('mail_password', document.getElementById('password').value);
             Homey.set('mail_host', document.getElementById('hostname').value);
             Homey.set('mail_port', document.getElementById('port').value);
+            Homey.set('mail_sender', document.getElementById('sender').value);
+            
+            console.log ("saved the settings!");
         }
         </script>
 

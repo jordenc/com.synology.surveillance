@@ -18,7 +18,8 @@
 	  	"username": "Mail gebruikersnaam",
 	  	"password": "Mail wachtwoord",
 	  	"hostname": "SMTP server",
-	  	"port": "SMTP poort"
+	  	"port": "SMTP poort",
+	  	"sender": "Adres afzender"
 	  	
   	}
 }

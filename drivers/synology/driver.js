@@ -2,6 +2,7 @@
 
 var http = require('http');
 var Synology = require('synology');
+var nodemailer = require('nodemailer');
 var tempdevices;
 var devices = [];
 var recordpath, snappath;
@@ -88,6 +89,14 @@ module.exports.pair = function (socket) {
 var hostname = Homey.manager('settings').get('hostname');
 var username = Homey.manager('settings').get('username');
 var password = Homey.manager('settings').get('password');
+
+//mail settings (if any)
+var mail_user = Homey.manager('settings').get('mail_user');
+var mail_pass = Homey.manager('settings').get('mail_pass');
+var mail_host = Homey.manager('settings').get('mail_host');
+var mail_port = Homey.manager('settings').get('mail_port');
+var mail_from = Homey.manager('settings').get('mail_from');
+
 
 if ( !hostname || !username || !password) {
 	
@@ -248,8 +257,6 @@ Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 			
 		}, function(err, data) {
 			
-			
-			//if blSave is set to false, you get data.imageData with binary data of the image
 			if (err) {
 				Homey.log (err);
 				callback (null, false);
@@ -257,19 +264,67 @@ Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 			
 			Homey.log ('result: ' + JSON.stringify(data));
 			
-			//sendmail (data.data.imageData, mail_host, mail_port, mail_user, mail_pass, mail_from, mail_to, args.device.id);
+			var transporter = nodemailer.createTransport(
+			{
+				host: mail_host,
+				port: mail_port,
+				auth: {
+					user: mail_user,
+					pass: mail_pass
+				},
+				tls: {rejectUnauthorized: false} 
+			});
 			
-			if (data.success) callback (null, true); else callback (null, false);
+			/*
+			var mailOptions = {
+				
+				from: mail_from,
+			    to: mail_to,
+			    subject: 'Snapshot from camera #' + args.device.id,
+			    text: '',
+			    html: ''
+		    
+			    attachments: [
+			        {   
+				        filename: 'snapshot.jpg',
+			            content: new Buffer(data.data.imageData, 'base64')
+			        }
+		        ]
+		    }*/
+		    
+		    Homey.log ('Logging in with SMTP to ' + mail_host + ':' + mail_port + ' - user ' + mail_user);
+		    
+		    var mailOptions = {
+				
+				from: mail_from,
+			    to: args.device.mailto,
+			    subject: 'Snapshot from camera #' + args.device.id,
+			    text: '',
+			    html: '',
+		    
+			    attachments: [
+			        {   
+				        filename: data.data.fileName,
+			            content: new Buffer(data.data.imageData, 'base64')
+			        }
+		        ]
+		    }
+		    
+		    transporter.sendMail(mailOptions, function(error, info){
+			    if(error){
+				    callback (null, false);
+			        return Homey.log(error);
+			    }
+			    Homey.log('Message sent: ' + info.response);
+			    callback (null, true);
+			});
 			
 		});
-
 	
 });
 
-
-function sendmail(buffer, mail_host, mail_port, mail_user, mail_pass, mail_from, mail_to, camID) {
-	
-	var nodemailer = require('nodemailer');
+/*
+function sendsnapmail(buffer, mail_host, mail_port, mail_user, mail_pass, mail_from, mail_to, camID) {
 	
 	var transporter = nodemailer.createTransport(
 	{
@@ -306,7 +361,7 @@ function sendmail(buffer, mail_host, mail_port, mail_user, mail_pass, mail_from,
 	});
 
 }
-
+*/
 
 // CONDITIONS:
 /*

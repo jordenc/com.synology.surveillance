@@ -4,7 +4,7 @@
         "en": "Synology Surveillance Station",
         "nl": "Synology Surveillance Station"
     },
-    "version": "0.0.3",
+    "version": "0.0.4",
     "compatibility": ">=0.8.30",
     "author": {
         "name": "Chamid Media",
@@ -116,6 +116,14 @@
                 "nl": "E-mail een foto"
             },
             "args": [
+	              {
+		              "name": "mailto",
+		              "type": "text",
+		              "placeholder": {
+			              "en": "Mail to",
+			              "nl": "Mail aan"
+		              }
+	              },
 	              {
 	                "name": "device",
 	                "type": "device",

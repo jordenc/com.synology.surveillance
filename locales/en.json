@@ -18,6 +18,7 @@
 	  	"username": "Mail username",
 	  	"password": "Mail password",
 	  	"hostname": "SMTP server",
-	  	"port": "SMTP port"
+	  	"port": "SMTP port",
+	  	"sender": "Sender address"
   	}
 }
