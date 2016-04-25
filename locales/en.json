@@ -11,5 +11,13 @@
 			"saveSettings": "Save settings",
 			"note": "Please make sure to provide a username that does not require 2 factor authentication!"
 		}
+  	},
+  	"settings": {
+	  	"intro": "On this page you can manage settings that apply to all your Synology Surveillance Station devices.",
+	  	"mailsettings": "Mail settings",
+	  	"username": "Mail username",
+	  	"password": "Mail password",
+	  	"hostname": "SMTP server",
+	  	"port": "SMTP port"
   	}
 }

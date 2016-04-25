@@ -1,37 +1,51 @@
 <!doctype html>
 <html>
     <head>
-
+		<script type="text/javascript" src="/manager/webserver/assets/js/jquery.js"></script>
     </head>
     <body>
 
-        <h1>Synology Settings</h1>
-        <p>On this page you can manage settings that apply to all your Synology Surveillance Station devices.</p>
+        <h1>Synology Surveillance Station</h1>
+        <p data-i18n="settings.intro">On this page you can manage settings that apply to all your Synology Surveillance Station devices.</p>
        
         <fieldset>
-            <legend>Mail settings</legend>
+            <legend data-i18n="settings.mailsettings">Mail settings</legend>
 
             <div class="field row">
-                <label for="test">Test field that is (too) long</label>
-                <input id="test" type="text" value="" />
+                <label for="username" data-i18n="settings.username">Mail username</label>
+                <input id="username" type="text" value="" />
             </div>
             <div class="field row">
-                <label for="test2">Write a message</label>
-                <textarea id="test2">textarea sample</textarea>
+                <label for="password" data-i18n="settings.password">Mail password</label>
+                <input id="password" type="password" value="" />
+            </div>
+            <div class="field row">
+                <label for="hostname" data-i18n="settings.hostname">SMTP server</label>
+                <input id="hostname" type="text" value="" placeholder="mail.yourdomain.com" />
+            </div>
+            <div class="field row">
+                <label for="port" data-i18n="settings.port">SMTP port</label>
+                <input id="port" type="text" value="" placeholder="25"/>
             </div>
 
         </fieldset>
 
-        <button class="right" onclick="save()">Save changes</button>
+        <button class="right" onclick="save()" data-i18n="pair.start.saveSettings">Save changes</button>
 
         <script type="text/javascript">
         function onHomeyReady(){
+	        Homey.get('mail_user', function(err, username){
+		       if( err ) return console.error('Could not get username', err);
+		       $('#username').val(username); 
+		    });
             Homey.ready()
         }
 
         function save() {
-            Homey.set('test', document.getElementById('test').value);
-            Homey.set('test2', document.getElementById('test2').value);
+            Homey.set('mail_user', document.getElementById('username').value);
+            Homey.set('mail_password', document.getElementById('password').value);
+            Homey.set('mail_host', document.getElementById('hostname').value);
+            Homey.set('mail_port', document.getElementById('port').value);
         }
         </script>
 

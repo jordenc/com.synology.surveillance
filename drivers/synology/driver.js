@@ -257,7 +257,7 @@ Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 			
 			Homey.log ('result: ' + JSON.stringify(data));
 			
-			sendmail (data.data.imageData, mail_host, mail_port, mail_user, mail_pass, mail_from, mail_to, args.device.id);
+			//sendmail (data.data.imageData, mail_host, mail_port, mail_user, mail_pass, mail_from, mail_to, args.device.id);
 			
 			if (data.success) callback (null, true); else callback (null, false);
 			

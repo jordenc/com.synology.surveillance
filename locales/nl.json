@@ -11,5 +11,14 @@
 			"saveSettings": "Gegevens opslaan",
 			"note": "Zorg ervoor dat de genoemde gebruikersnaam geen 2 factor authenticatie vereist!"
 		}
-	}	
+	},
+  	"settings": {
+	  	"intro": "Op deze pagina zijn alle instellingen te beheren die gebruikt kunnen worden door alle Synology Surveillance Station apparaten.",
+	  	"mailsettings": "Mail instellingen",
+	  	"username": "Mail gebruikersnaam",
+	  	"password": "Mail wachtwoord",
+	  	"hostname": "SMTP server",
+	  	"port": "SMTP poort"
+	  	
+  	}
 }
