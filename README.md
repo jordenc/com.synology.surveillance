@@ -11,5 +11,6 @@ The following cards are available:
 - [ACTION] Start recording
 - [ACTION] Stop recording
 - [ACTION] Take snapshot (will go to /USERNAME/@Snapshot/ on your Synology)
+- [ACTION] Mail snapshot (first fill in SMTP settings under 'Settings' in Homey!)
 
 Use at your own risk, I accept no responsibility for any damages caused by using this script.

@@ -70,7 +70,7 @@
 		       $('#port').val(mail_port); 
 		    });
 		    
-		    Homey.get('mail_sender', function(err, mail_sender){
+		    Homey.get('mail_from', function(err, mail_sender){
 		       if( err ) return console.error('Could not get mail_sender', err);
 		       $('#sender').val(mail_sender); 
 		    });
@@ -83,9 +83,10 @@
             Homey.set('mail_password', document.getElementById('password').value);
             Homey.set('mail_host', document.getElementById('hostname').value);
             Homey.set('mail_port', document.getElementById('port').value);
-            Homey.set('mail_sender', document.getElementById('sender').value);
+            Homey.set('mail_from', document.getElementById('sender').value);
             
             console.log ("saved the settings!");
+            alert('Settings saved!');
         }
         </script>
 

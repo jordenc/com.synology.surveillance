@@ -263,80 +263,71 @@ Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 
 	Homey.log('take snapshot - ' + snappath);
 	
-	syno.query(snappath, {
-			api    		: 'SYNO.SurveillanceStation.SnapShot',
-			version		: 1,
-			method 		: 'TakeSnapshot',
-			camId  		: args.device.id,
-			blSave		: false,
-			dsId		: 0,
-			'_sid' 		: sid
-			
-		}, function(err, data) {
-			
-			if (err) {
-				Homey.log (err);
-				callback (null, false);
-			}
-			
-			Homey.log ('result: ' + JSON.stringify(data));
-			
-			var transporter = nodemailer.createTransport(
-			{
-				host: mail_host,
-				port: mail_port,
-				auth: {
-					user: mail_user,
-					pass: mail_pass
-				},
-				tls: {rejectUnauthorized: false} 
-			});
-			
-			/*
-			var mailOptions = {
+	if ( typeof mail_user !== 'undefined' && typeof mail_pass !== 'undefined' && typeof mail_host !== 'undefined' && typeof mail_port !== 'undefined' && typeof mail_from !== 'undefined') {
+	
+		syno.query(snappath, {
+				api    		: 'SYNO.SurveillanceStation.SnapShot',
+				version		: 1,
+				method 		: 'TakeSnapshot',
+				camId  		: args.device.id,
+				blSave		: false,
+				dsId		: 0,
+				'_sid' 		: sid
 				
-				from: mail_from,
-			    to: mail_to,
-			    subject: 'Snapshot from camera #' + args.device.id,
-			    text: '',
-			    html: ''
-		    
-			    attachments: [
-			        {   
-				        filename: 'snapshot.jpg',
-			            content: new Buffer(data.data.imageData, 'base64')
-			        }
-		        ]
-		    }*/
-		    
-		    //Homey.log ('Logging in with SMTP to ' + mail_host + ':' + mail_port + ' - user ' + mail_user + ' / pass: ' + mail_pass);
-		    
-		    var mailOptions = {
+			}, function(err, data) {
 				
-				from: 'Homey <' + mail_from + '>',
-			    to: args.mailto,
-			    subject: 'Snapshot from camera #' + args.device.id,
-			    text: '',
-			    html: '',
-		    
-			    attachments: [
-			        {   
-				        filename: data.data.fileName,
-			            content: new Buffer(data.data.imageData, 'base64')
-			        }
-		        ]
-		    }
-		    
-		    transporter.sendMail(mailOptions, function(error, info){
-			    if(error){
-				    callback (null, false);
-			        return Homey.log(error);
+				if (err) {
+					Homey.log (err);
+					callback (null, false);
+				}
+				
+				Homey.log ('result: ' + JSON.stringify(data));
+				
+				var transporter = nodemailer.createTransport(
+				{
+					host: mail_host,
+					port: mail_port,
+					auth: {
+						user: mail_user,
+						pass: mail_pass
+					},
+					tls: {rejectUnauthorized: false} 
+				});
+			    
+			    var mailOptions = {
+					
+					from: 'Homey <' + mail_from + '>',
+				    to: args.mailto,
+				    subject: 'Snapshot from camera #' + args.device.id,
+				    text: '',
+				    html: '',
+			    
+				    attachments: [
+				        {   
+					        filename: data.data.fileName,
+				            content: new Buffer(data.data.imageData, 'base64')
+				        }
+			        ]
 			    }
-			    Homey.log('Message sent: ' + info.response);
-			    callback (null, true);
+			    
+			    transporter.sendMail(mailOptions, function(error, info){
+				    if(error){
+					    callback (null, false);
+				        return Homey.log(error);
+				    }
+				    Homey.log('Message sent: ' + info.response);
+				    callback (null, true);
+				});
+				
 			});
 			
-		});
+		} else {
+			
+			Homey.log('Not all required variables for mailing have been set');
+		    
+			callback (null, false);
+			
+		}
 	
 });
 
