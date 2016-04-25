@@ -8,6 +8,19 @@ var devices = [];
 var recordpath, snappath;
 var sid;
 
+function updatesettings() {
+	
+	//mail settings (if any)
+	var mail_user = Homey.manager('settings').get('mail_user');
+	var mail_pass = Homey.manager('settings').get('mail_password');
+	var mail_host = Homey.manager('settings').get('mail_host');
+	var mail_port = Homey.manager('settings').get('mail_port');
+	var mail_from = Homey.manager('settings').get('mail_from');
+
+	Homey.log('Backend settings updated');
+
+}
+
 module.exports.pair = function (socket) {
 
 	// socket is a direct channel to the front-end
@@ -90,12 +103,7 @@ var hostname = Homey.manager('settings').get('hostname');
 var username = Homey.manager('settings').get('username');
 var password = Homey.manager('settings').get('password');
 
-//mail settings (if any)
-var mail_user = Homey.manager('settings').get('mail_user');
-var mail_pass = Homey.manager('settings').get('mail_pass');
-var mail_host = Homey.manager('settings').get('mail_host');
-var mail_port = Homey.manager('settings').get('mail_port');
-var mail_from = Homey.manager('settings').get('mail_from');
+updatesettings();
 
 
 if ( !hostname || !username || !password) {
@@ -292,7 +300,7 @@ Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 		        ]
 		    }*/
 		    
-		    Homey.log ('Logging in with SMTP to ' + mail_host + ':' + mail_port + ' - user ' + mail_user);
+		    Homey.log ('Logging in with SMTP to ' + mail_host + ':' + mail_port + ' - user ' + mail_user + ' / pass: ' + mail_pass);
 		    
 		    var mailOptions = {
 				
