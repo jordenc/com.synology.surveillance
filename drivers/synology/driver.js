@@ -231,8 +231,83 @@ Homey.manager('flow').on('action.snapshot', function (callback, args) {
 			
 		});
 
+});
+
+Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
+
+	Homey.log('take snapshot - ' + snappath);
+	
+	syno.query(snappath, {
+			api    		: 'SYNO.SurveillanceStation.SnapShot',
+			version		: 1,
+			method 		: 'TakeSnapshot',
+			camId  		: args.device.id,
+			blSave		: false,
+			dsId		: 0,
+			'_sid' 		: sid
+			
+		}, function(err, data) {
+			
+			
+			//if blSave is set to false, you get data.imageData with binary data of the image
+			if (err) {
+				Homey.log (err);
+				callback (null, false);
+			}
+			
+			Homey.log ('result: ' + JSON.stringify(data));
+			
+			sendmail (data.data.imageData, mail_host, mail_port, mail_user, mail_pass, mail_from, mail_to, args.device.id);
+			
+			if (data.success) callback (null, true); else callback (null, false);
+			
+		});
+
 	
 });
+
+
+function sendmail(buffer, mail_host, mail_port, mail_user, mail_pass, mail_from, mail_to, camID) {
+	
+	var nodemailer = require('nodemailer');
+	
+	var transporter = nodemailer.createTransport(
+	{
+		host: mail_host,
+		port: mail_port,
+		auth: {
+			user: mail_user,
+			pass: mail_pass
+		},
+		tls: {rejectUnauthorized: false} 
+	});
+	var mailOptions = {
+		
+		from: mail_from,
+	    to: mail_to,
+	    subject: 'Snapshot from camera #' + camID,
+	    text: '',
+	    html: ''
+    
+	    attachments: [
+
+        {   
+	        filename: 'snapshot.jpg',
+            content: new Buffer(buffer, 'base64')
+        }
+        ]
+    }
+    
+    transporter.sendMail(mailOptions, function(error, info){
+	    if(error){
+	        return Homey.log(error);
+	    }
+	    Homey.log('Message sent: ' + info.response);
+	});
+
+}
+
+
 // CONDITIONS:
 /*
 Homey.manager('flow').on('condition.recording', function(callback, args){
