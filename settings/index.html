@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+    <head>
+
+    </head>
+    <body>
+
+        <h1>Synology Settings</h1>
+        <p>On this page you can manage settings that apply to all your Synology Surveillance Station devices.</p>
+       
+        <fieldset>
+            <legend>Mail settings</legend>
+
+            <div class="field row">
+                <label for="test">Test field that is (too) long</label>
+                <input id="test" type="text" value="" />
+            </div>
+            <div class="field row">
+                <label for="test2">Write a message</label>
+                <textarea id="test2">textarea sample</textarea>
+            </div>
+
+        </fieldset>
+
+        <button class="right" onclick="save()">Save changes</button>
+
+        <script type="text/javascript">
+        function onHomeyReady(){
+            Homey.ready()
+        }
+
+        function save() {
+            Homey.set('test', document.getElementById('test').value);
+            Homey.set('test2', document.getElementById('test2').value);
+        }
+        </script>
+
+    </body>
+</html>
