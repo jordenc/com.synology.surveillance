@@ -4,7 +4,7 @@
         "en": "Synology Surveillance Station",
         "nl": "Synology Surveillance Station"
     },
-    "version": "0.0.5",
+    "version": "1.0.0",
     "compatibility": ">=0.8.29",
     "author": {
         "name": "Chamid Media",
