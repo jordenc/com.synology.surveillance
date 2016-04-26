@@ -4,8 +4,8 @@
         "en": "Synology Surveillance Station",
         "nl": "Synology Surveillance Station"
     },
-    "version": "0.0.4",
-    "compatibility": ">=0.8.30",
+    "version": "0.0.5",
+    "compatibility": ">=0.8.29",
     "author": {
         "name": "Chamid Media",
         "email": "info@chamidmedia.nl"
@@ -134,7 +134,7 @@
 	                "filter": "driver_id=synology"
 	              }
 	        ]
-        }   
+        }
        ],
         "conditions": [
         {
@@ -142,6 +142,24 @@
             "title": {
                 "en": "!{{is|is not}} recording",
                 "nl": "!{{is|is niet}} aan het opnemen"
+            },
+            "args": [
+	              {
+	                "name": "device",
+	                "type": "device",
+	                "placeholder": {
+	                  "en": "Select camera",
+	                  "nl": "Selecteer camera"
+	                },
+	                "filter": "driver_id=synology"
+	              }
+	        ]
+        },
+        {
+            "id": "available",
+            "title": {
+                "en": "!{{is|is not}} available",
+                "nl": "!{{is|is niet}} beschikbaar"
             },
             "args": [
 	              {

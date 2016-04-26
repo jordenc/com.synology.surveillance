@@ -120,12 +120,12 @@ if ( !hostname || !username || !password) {
 	Homey.log ('Either hostname, username or password is not yet filled in');
 	
 } else {
-var syno = new Synology({
-    host    : hostname,
-    user    : username,
-    password: password
-});
-Homey.log('should be connected!');
+	var syno = new Synology({
+	    host    : hostname,
+	    user    : username,
+	    password: password
+	});
+	Homey.log('should be connected!');
 
 	syno.query('/webapi/auth.cgi', {
 		api    		: 'SYNO.API.Auth',
@@ -175,7 +175,6 @@ Homey.log('should be connected!');
 		snappath = '/webapi/' + data["data"]["SYNO.SurveillanceStation.SnapShot"]["path"];
 	
 	});
-
 	
 }
 
@@ -243,7 +242,6 @@ Homey.manager('flow').on('action.snapshot', function (callback, args) {
 			'_sid' 		: sid
 			
 		}, function(err, data) {
-			
 			
 			//if blSave is set to false, you get data.imageData with binary data of the image
 			if (err) {
@@ -332,8 +330,57 @@ Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 });
 
 // CONDITIONS:
-/*
-Homey.manager('flow').on('condition.recording', function(callback, args){
+Homey.manager('flow').on('condition.available', function(callback, args){
+	
+	syno.query('/webapi/entry.cgi', {
+			api    		: 'SYNO.SurveillanceStation.Camera',
+			version		: 1,
+			method 		: 'GetInfo',
+			cameraIds	: args.device.id
+		}, function(err, data) {
+			
+			if (err) {
+				Homey.log (err);
+				callback (null, false);
+			}
+			
+			Homey.log ('result: ' + JSON.stringify(data));
+			if (data.data.cameras[0].camStatus == 1) callback (null, true); else callback (null, false);
+			
+		});
 });
-*/
+
+
+Homey.manager('flow').on('condition.recording', function(callback, args){
+	
+	syno.query('/webapi/entry.cgi', {
+			api    		: 'SYNO.SurveillanceStation.Camera',
+			version		: 1,
+			method 		: 'GetInfo',
+			cameraIds	: args.device.id
+		}, function(err, data) {
+			
+			if (err) {
+				Homey.log (err);
+				callback (null, false);
+			}
+			
+			Homey.log ('result: ' + JSON.stringify(data));
+			Homey.log('recStatus: ' + data.data.cameras[0].recStatus);
+			
+			/*
+				0: None recording schedule
+				1: Continue recording schedule
+				2: Motion detect recording schedule
+				3: Digital input recording schedule
+				4: Digital input recording schedule
+				5: Manual recording schedule
+				6: External
+				7: Analytics
+			*/
+			
+			if (data.data.cameras[0].recStatus != 0) callback (null, true); else callback (null, false);
+			
+		});
+});
 //
