@@ -2,24 +2,21 @@
 
 Homey.setTitle( __('pair.start.title') );
 
-Homey.on('error', function( errortype, callback ){
+Homey.on('error', function( error ){
 
-	if (errortype == 'error') {
-		Homey.alert(__('pair.start.error'), 'error');
-		Homey.done();
+	console.log('Error: ' + JSON.stringify(error));
+	
+	if (error.code == 'EHOSTUNREACH' || error.code == 'ENOTFOUND') {
+		Homey.alert (__('pair.start.unabletoreach'), 'error');
 	}
-
-	if (errortype == 'nosettings') {
-		Homey.alert(__('pair.start.nosettings'), 'error');
-		Homey.done();
-	}
-})
+	
+});
 
 Homey.on('continue', function( success, callback ){
 
 	Homey.showView('list_devices');
 
-})
+});
 
 function saveSettings () {
 
@@ -27,6 +24,7 @@ function saveSettings () {
 	var inputhostname = document.getElementById( 'hostname' ).value;
 	var inputusername = document.getElementById( 'username' ).value;
 	var inputpassword = document.getElementById( 'password' ).value;
+	var inputport = document.getElementById( 'port' ).value;
 	
 	if (inputhostname != '' && inputusername != '' && inputpassword != '') {
 
@@ -34,7 +32,9 @@ function saveSettings () {
 		var data = {
 			hostname: inputhostname,
 			username: inputusername,
-			password: inputpassword
+			password: inputpassword,
+			port	: inputport
+			
 		};
 
 		// Continue to back-end, pass along data
@@ -66,6 +66,10 @@ function saveSettings () {
 			<tr>
 				<td style="width:100px;" data-i18n="pair.start.hostname">IP Address</td>
 				<td><input id="hostname" type="text" value="" placeholder="192.168.1.123"/></td>
+			</tr>
+			<tr>
+				<td style="width:100px;" data-i18n="pair.start.port">Port</td>
+				<td><input id="port" type="text" value="" placeholder="5000"/></td>
 			</tr>
 			<tr>
 				<td style="width:100px;" data-i18n="pair.start.username">Username</td>

@@ -6,10 +6,12 @@
 			"error": "An error has occurred.",
 			"required": "All fields are required.",
 			"hostname": "IP address",
+			"port": "Port",
 			"username": "Username",
 			"password": "Password",
 			"saveSettings": "Save settings",
-			"note": "Please make sure to provide a username that does not require 2 factor authentication!"
+			"note": "Please make sure to provide a username that does not require 2 factor authentication!",
+			"unabletoreach": "Unable to reach NAS with supplied IP / port settings"
 		}
   	},
   	"settings": {

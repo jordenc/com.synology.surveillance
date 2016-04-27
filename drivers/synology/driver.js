@@ -74,13 +74,15 @@ module.exports.pair = function (socket) {
 		var hostname = data.hostname;
 		var username = data.username;
 		var password = data.password;
+		var port = data.port;
 		
 		Homey.log ( "Synology Surveillance Station app - got get_devices from front-end, hostname =" + hostname );
 
 		var syno = new Synology({
 		    host    : hostname,
 		    user    : username,
-		    password: password
+		    password: password,
+		    port	: port
 		});
 		
 		syno.query('/webapi/entry.cgi', {
@@ -89,13 +91,20 @@ module.exports.pair = function (socket) {
 			method : 'List',
 			query  : 'ALL'
 		}, function(err, data) {
-			if (err) return console.error(err);
+			
+			if (err) {
+				
+				Homey.log('CONNECTerror: ' + err);	
+				socket.emit('error', err);
+				return callback (null, err);
+			}
 			
 			tempdevices = data.data.cameras;
 			
 			Homey.manager('settings').set('hostname', hostname);
 			Homey.manager('settings').set('username', username);
 			Homey.manager('settings').set('password', password);
+			Homey.manager('settings').set('port', port);
 			
 			socket.emit ('continue', null);
 		});
@@ -111,9 +120,11 @@ module.exports.pair = function (socket) {
 var hostname = Homey.manager('settings').get('hostname');
 var username = Homey.manager('settings').get('username');
 var password = Homey.manager('settings').get('password');
+var port	 = Homey.manager('settings').get('port');
 
 updatesettings();
 
+if (!port) port = 5000;
 
 if ( !hostname || !username || !password) {
 	
@@ -123,7 +134,8 @@ if ( !hostname || !username || !password) {
 	var syno = new Synology({
 	    host    : hostname,
 	    user    : username,
-	    password: password
+	    password: password,
+	    port	: port
 	});
 	Homey.log('should be connected!');
 

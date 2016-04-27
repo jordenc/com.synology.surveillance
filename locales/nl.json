@@ -6,10 +6,12 @@
 			"error": "Er is een fout opgetreden.",
 			"required": "Alle velden zijn verplicht.",
 			"hostname": "IP-adres",
+			"port": "Poort",
 			"username": "Gebruikersnaam",
 			"password": "Wachtwoord",
 			"saveSettings": "Gegevens opslaan",
-			"note": "Zorg ervoor dat de genoemde gebruikersnaam geen 2 factor authenticatie vereist!"
+			"note": "Zorg ervoor dat de genoemde gebruikersnaam geen 2 factor authenticatie vereist!",
+			"unabletoreach": "Verbinding maken mislukt (IP/poort fout?)"
 		}
 	},
   	"settings": {
