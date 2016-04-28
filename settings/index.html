@@ -46,39 +46,44 @@
 
         </fieldset>
 
-        <button class="right" onclick="save()" data-i18n="pair.start.saveSettings">Save changes</button>
+        <button class="right" id="savebutton" onclick="save()" data-i18n="pair.start.saveSettings">Save changes</button>
 
         <script type="text/javascript">
         function onHomeyReady(){
 	        Homey.get('mail_user', function(err, username){
 		       if( err ) return console.error('Could not get username', err);
-		       $('#username').val(username); 
+		       document.getElementById('username').value = username; 
 		    });
 		    
 		    Homey.get('mail_password', function(err, password){
 		       if( err ) return console.error('Could not get mail_password', err);
-		       $('#password').val(password); 
+		       document.getElementById('password').value = password; 
 		    });
 		    
 		    Homey.get('mail_host', function(err, mail_host){
 		       if( err ) return console.error('Could not get mail_host', err);
-		       $('#hostname').val(mail_host); 
+		       document.getElementById('hostname').value = mail_host; 
 		    });
 		    
 		    Homey.get('mail_port', function(err, mail_port){
 		       if( err ) return console.error('Could not get mail_port', err);
-		       $('#port').val(mail_port); 
+		       document.getElementById('port').value = mail_port; 
 		    });
 		    
 		    Homey.get('mail_from', function(err, mail_sender){
 		       if( err ) return console.error('Could not get mail_sender', err);
-		       $('#sender').val(mail_sender); 
+		       document.getElementById('sender').value = mail_sender; 
 		    });
 		    
             Homey.ready();
         }
 
         function save() {
+	        
+			var savebutton = document.getElementById('savebutton');
+			
+			savebutton.disabled = true;
+
             Homey.set('mail_user', document.getElementById('username').value);
             Homey.set('mail_password', document.getElementById('password').value);
             Homey.set('mail_host', document.getElementById('hostname').value);
@@ -86,7 +91,11 @@
             Homey.set('mail_from', document.getElementById('sender').value);
             
             console.log ("saved the settings!");
-            alert('Settings saved!');
+            
+            setTimeout(function() {
+                    savebutton.disabled = false;
+                }, 3500);
+                
         }
         </script>
 
