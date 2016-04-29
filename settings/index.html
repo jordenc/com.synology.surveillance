@@ -1,8 +1,6 @@
 <!doctype html>
 <html>
     <head>
-		<script type="text/javascript" src="/manager/webserver/assets/js/jquery.js"></script>
-		
 		<style>
 			input {
 				font-size:16px;
@@ -19,6 +17,8 @@
 
         <h1>Synology Surveillance Station</h1>
         <p data-i18n="settings.intro">On this page you can manage settings that apply to all your Synology Surveillance Station devices.</p>
+        
+        <p data-i18n="settings.gmailexplanation">If you wish to send through Gmail SMTP servers, you first need to allow less secure apps on Gmail via <a href='https://www.google.com/settings/security/lesssecureapps' target='_blank'>https://www.google.com/settings/security/lesssecureapps</a></p>
        
         <fieldset>
             <legend data-i18n="settings.mailsettings">Mail settings</legend>
@@ -45,8 +45,11 @@
             </div>
 
         </fieldset>
+        
+        <div id="testresult"></div>
 
         <button class="right" id="savebutton" onclick="save()" data-i18n="pair.start.saveSettings">Save changes</button>
+        <button class="right" id="testbutton" onclick="test()" data-i18n="settings.testSettings">Test settings</button>
 
         <script type="text/javascript">
         function onHomeyReady(){
@@ -97,6 +100,38 @@
                 }, 3500);
                 
         }
+        
+         function test() {
+	        
+	        document.getElementById('testresult').innerHTML = "Testing...";
+	        
+			var testbutton = document.getElementById('testbutton');
+			
+			testbutton.disabled = true;
+
+            console.log ("Testing the settings .. ");
+            
+            Homey.api( 'PUT', '/settings/', {
+			    "mail_user": document.getElementById('username').value,
+			    "mail_password": document.getElementById('password').value,
+			    "mail_host": document.getElementById('hostname').value,
+			    "mail_port": document.getElementById('port').value,
+			    "mail_from": document.getElementById('sender').value
+			}, function( msg, result ){
+			    
+			    document.getElementById('testresult').innerHTML = msg;
+				
+			});
+			
+			//testmail();
+
+            
+            setTimeout(function() {
+                    testbutton.disabled = false;
+                }, 3500);
+                
+        }
+        
         </script>
 
     </body>

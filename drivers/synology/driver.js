@@ -16,7 +16,6 @@ Homey.manager('settings').on('set', function (name) {
 	
 });
 
-
 function updatesettings() {
 	
 	//mail settings (if any)
