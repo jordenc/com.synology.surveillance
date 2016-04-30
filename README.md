@@ -16,3 +16,11 @@ The following cards are available:
 - [CONDITION] Is the camera available?
 
 Use at your own risk, I accept no responsibility for any damages caused by using this script.
+
+# Changelog
+**Version 1.1.0**
+**Version 1.0.3:**
+- There now is a 'test' button in the settings menu. This will test your mail settings and display it either being sent succesful, or return the error.
+
+**Version 1.0.0:**
+Initial version

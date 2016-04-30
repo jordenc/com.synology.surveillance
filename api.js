@@ -4,7 +4,6 @@ module.exports = [
         method: 		'PUT',
         path:			'/settings/',
         fn: function( callback, args ){
-            //var result = Homey.app.updateSomething( args.params.id, args.body );
             
            var nodemailer = require('nodemailer');
 			

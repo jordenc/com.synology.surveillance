@@ -239,6 +239,73 @@ Homey.manager('flow').on('action.stopRecording', function( callback, args ){
 		});
 });
 
+
+Homey.manager('flow').on('action.test', function (callback, args) {
+	
+	http.get({
+        host: hostname,
+        port: port,
+        path: snappath + '?api=SYNO.SurveillanceStation.SnapShot&version=1&method=TakeSnapshot&camId=' + args.device.id + '&blSave=true&dsId=0&_sid=' + sid
+    }, function(response) {
+        // Continuously update stream with data
+        var body = '';
+        response.on('data', function(d) {
+            body += d;
+        });
+        response.on('end', function() {
+
+			try {
+				var parsed = JSON.parse(body);
+				
+				if (parsed.success == true) {
+	
+					callback (null, true);
+									
+				} else {
+					
+					callback (null, false);
+					
+				}
+				
+				Homey.log('RAW body = ' + body);
+			} catch (e) {
+				
+				callback (e, false);
+				
+			}
+        });
+        response.on('error', function (e) {
+	        
+	        callback (e, false);
+	    
+        });
+    });
+	/*
+	syno.query(snappath, {
+			api    		: 'SYNO.SurveillanceStation.SnapShot',
+			version		: 1,
+			method 		: 'TakeSnapshot',
+			camId  		: args.device.id,
+			blSave		: true,
+			dsId		: 0,
+			'_sid' 		: sid
+			
+		}, function(err, data) {
+			
+			//if blSave is set to false, you get data.imageData with binary data of the image
+			if (err) {
+				Homey.log (err);
+				callback (null, false);
+			}
+			
+			Homey.log ('result: ' + JSON.stringify(data));
+			
+			if (data.success) callback (null, true); else callback (null, false);
+			
+		});
+	*/
+});
+
 Homey.manager('flow').on('action.snapshot', function (callback, args) {
 
 	Homey.log('take snapshot - ' + snappath);
