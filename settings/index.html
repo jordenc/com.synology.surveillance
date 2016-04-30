@@ -46,10 +46,16 @@
 
         </fieldset>
         
+        <fieldset>
+	        <legend data-i18n="settings.polling">Polling</legend>
+        
+			<input type="checkbox" id="polling"><label data-i18n="settings.enablepolling"></label>
+        
+        </fieldset>
         <div id="testresult"></div>
 
         <button class="right" id="savebutton" onclick="save()" data-i18n="pair.start.saveSettings">Save changes</button>
-        <button class="right" id="testbutton" onclick="test()" data-i18n="settings.testSettings">Test settings</button>
+        <button class="right" id="testbutton" onclick="test()" data-i18n="settings.testmailSettings">Test settings</button>
 
         <script type="text/javascript">
         function onHomeyReady(){
