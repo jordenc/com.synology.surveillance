@@ -239,13 +239,45 @@ Homey.manager('flow').on('action.stopRecording', function( callback, args ){
 		});
 });
 
+function login(cmdcallback) {
+	
+	var options = [];
+	options["api"] 		= 'SYNO.API.Auth';
+	options["version"]	= '2';
+	options["method"]	= 'Login';
+	options["account"]	= username;
+	options["passwd"]	= password;
+	options["session"]	= 'SurveillanceStation';
+	options["format"]	= 'sid';
+	options["session"]	= 'NodeSynologyAPI' + Math.round(Math.random() * 1e9);
+	
+	execute_command (options, '/webapi/auth.cgi', false, function(sid) {
+		
+		cmdcallback(sid);
+		
+	});
+	
+}
 
-Homey.manager('flow').on('action.test', function (callback, args) {
+function execute_command (options, path, callback, logincall) {
+	
+	Homey.log('[CMD] ' + options.method + ' called');
+	
+	var query = '?';
+	
+	for (var key in options) {
+		
+		if (query != '?') query = query + '&';
+		query = query + key + '=' + options[key].toString();
+		
+    }
+	
+	//Homey.log('[PATH] ' + path + query);
 	
 	http.get({
         host: hostname,
         port: port,
-        path: snappath + '?api=SYNO.SurveillanceStation.SnapShot&version=1&method=TakeSnapshot&camId=' + args.device.id + '&blSave=true&dsId=0&_sid=' + sid
+        path: path + query
     }, function(response) {
         // Continuously update stream with data
         var body = '';
@@ -254,85 +286,83 @@ Homey.manager('flow').on('action.test', function (callback, args) {
         });
         response.on('end', function() {
 
-			try {
-				var parsed = JSON.parse(body);
+			if (callback) {
 				
-				if (parsed.success == true) {
-	
-					callback (null, true);
-									
-				} else {
+				try {
+					var parsed = JSON.parse(body);
 					
-					callback (null, false);
+					if (parsed.success == true) {
+		
+						callback (null, true);
+										
+					} else {
+						
+						callback (null, false);
+						
+					}
+					
+					Homey.log('[BODY] ' + body);
+				} catch (e) {
+					
+					callback (e, false);
 					
 				}
 				
-				Homey.log('RAW body = ' + body);
-			} catch (e) {
+				logout(sid);
 				
-				callback (e, false);
+			} else {
+				
+				try {
+					var parsed = JSON.parse(body);
+					
+					Homey.log('parsed='+JSON.stringify(parsed));
+					if (logincall) logincall(parsed.data.sid);	
+
+				} catch (e) {
+					
+					if (logincall) logincall(false);
+					
+				}
 				
 			}
+			
         });
         response.on('error', function (e) {
 	        
 	        callback (e, false);
-	    
+			logout(sid);
+			
         });
     });
-	/*
-	syno.query(snappath, {
-			api    		: 'SYNO.SurveillanceStation.SnapShot',
-			version		: 1,
-			method 		: 'TakeSnapshot',
-			camId  		: args.device.id,
-			blSave		: true,
-			dsId		: 0,
-			'_sid' 		: sid
-			
-		}, function(err, data) {
-			
-			//if blSave is set to false, you get data.imageData with binary data of the image
-			if (err) {
-				Homey.log (err);
-				callback (null, false);
-			}
-			
-			Homey.log ('result: ' + JSON.stringify(data));
-			
-			if (data.success) callback (null, true); else callback (null, false);
-			
-		});
-	*/
-});
+
+}
+
+function logout (sid) {
+	
+	var options = [];
+	options["api"]		= 'SYNO.API.Auth';
+	options['version']	= '2';
+	options['method']	= 'Logout';
+	options['session']	= 'SurveillanceStation';
+	options['_sid']		= sid;
+	execute_command (options, '/webapi/auth.cgi', false);
+	
+}
 
 Homey.manager('flow').on('action.snapshot', function (callback, args) {
+	var options = [];
+	options["api"] 		= 'SYNO.SurveillanceStation.SnapShot';
+	options["version"]	= '1';
+	options["method"]	= 'TakeSnapshot';
+	options["camId"]	= args.device.id;
+	options["blSave"]	= 'true';
+	options["dsId"]		= '0';
 
-	Homey.log('take snapshot - ' + snappath);
+	login(function (sid) {
+		options["_sid"] = sid;
+		execute_command (options, snappath, callback);	
+	});
 	
-	syno.query(snappath, {
-			api    		: 'SYNO.SurveillanceStation.SnapShot',
-			version		: 1,
-			method 		: 'TakeSnapshot',
-			camId  		: args.device.id,
-			blSave		: true,
-			dsId		: 0,
-			'_sid' 		: sid
-			
-		}, function(err, data) {
-			
-			//if blSave is set to false, you get data.imageData with binary data of the image
-			if (err) {
-				Homey.log (err);
-				callback (null, false);
-			}
-			
-			Homey.log ('result: ' + JSON.stringify(data));
-			
-			if (data.success) callback (null, true); else callback (null, false);
-			
-		});
-
 });
 
 Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
@@ -340,6 +370,21 @@ Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 	Homey.log('take snapshot - ' + snappath);
 	
 	if ( typeof mail_user !== 'undefined' && typeof mail_pass !== 'undefined' && typeof mail_host !== 'undefined' && typeof mail_port !== 'undefined' && typeof mail_from !== 'undefined') {
+	
+		/*
+		var options = [];
+		options["api"] 		= 'SYNO.SurveillanceStation.SnapShot';
+		options["version"]	= '1';
+		options["method"]	= 'TakeSnapshot';
+		options["camId"]	= args.device.id;
+		options["blSave"]	= 'false';
+		options["dsId"]		= '0';
+	
+		login(function (sid) {
+			options["_sid"] = sid;
+			execute_command (options, snappath, callback);	
+		});
+		*/
 	
 		syno.query(snappath, {
 				api    		: 'SYNO.SurveillanceStation.SnapShot',

@@ -134,24 +134,6 @@
 	                "filter": "driver_id=synology"
 	              }
 	        ]
-        },
-        {
-            "id": "test",
-            "title": {
-                "en": "Test - work in progress",
-                "nl": "Test"
-            },
-            "args": [
-	              {
-	                "name": "device",
-	                "type": "device",
-	                "placeholder": {
-	                  "en": "Select camera",
-	                  "nl": "Selecteer camera"
-	                },
-	                "filter": "driver_id=synology"
-	              }
-	        ]
         }
        ],
         "conditions": [
