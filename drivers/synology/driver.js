@@ -417,7 +417,7 @@ Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 					
 					from: 'Homey <' + mail_from + '>',
 				    to: args.mailto,
-				    subject: 'Snapshot from camera #' + devices[args.device.id].id,
+				    subject: __("snapshot_from")' #' + devices[args.device.id].id,
 				    text: '',
 				    html: '',
 			    

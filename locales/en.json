@@ -27,5 +27,6 @@
 	  	"polling": "Polling",
 	  	"enablepolling": "Enable polling device status for triggers"
   	},
-  	"not_all_vars_set": "Not all required variables for mailing have been set"
+  	"not_all_vars_set": "Not all required variables for mailing have been set",
+  	"snapshot_from": "Snapshot from camera"
 }

@@ -20,6 +20,8 @@ Use at your own risk, I accept no responsibility for any damages caused by using
 # Changelog
 **Version 1.1.0**
 - Removed requirement of external node modules, which makes the package much smaller
+- Now supports multiple Synology NAS devices, settings get stored per camera
+- Login & Logout per action, to support multiple NAS devices and at the same time this prevents a lockout when Synology decides the session ID has expired
 
 **Version 1.0.3:**
 - There now is a 'test' button in the settings menu. This will test your mail settings and display it either being sent successful, or return the error.

@@ -27,5 +27,6 @@
 	  	"polling": "Statuschecks",
 	  	"enablepolling": "Schakel statuschecks in om acties in Homey te kunnen koppelen aan acties van buitenaf"
   	},
-  	"not_all_vars_set": "Niet alle benodigde gegevens zijn ingesteld"
+  	"not_all_vars_set": "Niet alle benodigde gegevens zijn ingesteld",
+  	"snapshot_from": "Snapshot van camera"
 }
