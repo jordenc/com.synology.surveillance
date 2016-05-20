@@ -58,20 +58,74 @@
         {
             "id": "recording_starts",
             "title": {
-                "en": "Started recording",
-                "nl": "Opname is gestart"
+                "en": "Start recording",
+                "nl": "Opname start"
             },
-            "tokens": [
-                {
-                    "name": "mm_per_hour",
-                    "title": {
-                        "en": "mm/h"
-                    },
-                    "example": {
-                        "en": "5"
-                    }
-                }
-            ]
+            "args": [
+              {
+                "name": "device",
+                "type": "device",
+                "placeholder": {
+                  "en": "Select camera",
+                  "nl": "Selecteer camera"
+                },
+                "filter": "driver_id=synology"
+              }
+			]
+        },
+        {
+            "id": "recording_stops",
+            "title": {
+                "en": "Stops recording",
+                "nl": "Opname stopt"
+            },
+            "args": [
+              {
+                "name": "device",
+                "type": "device",
+                "placeholder": {
+                  "en": "Select camera",
+                  "nl": "Selecteer camera"
+                },
+                "filter": "driver_id=synology"
+              }
+			]
+        },
+        {
+            "id": "cam_available",
+            "title": {
+                "en": "Becomes available",
+                "nl": "Camera is beschikbaar"
+            },
+            "args": [
+              {
+                "name": "device",
+                "type": "device",
+                "placeholder": {
+                  "en": "Select camera",
+                  "nl": "Selecteer camera"
+                },
+                "filter": "driver_id=synology"
+              }
+			]
+        },
+        {
+            "id": "cam_unavailable",
+            "title": {
+                "en": "Becomes unavailable",
+                "nl": "Camera is niet beschikbaar"
+            },
+            "args": [
+              {
+                "name": "device",
+                "type": "device",
+                "placeholder": {
+                  "en": "Select camera",
+                  "nl": "Selecteer camera"
+                },
+                "filter": "driver_id=synology"
+              }
+			]
         }
         ],
         "actions": [

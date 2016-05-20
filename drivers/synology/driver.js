@@ -25,9 +25,10 @@ function updatesettings() {
 	mail_port = Homey.manager('settings').get('mail_port');
 	mail_from = Homey.manager('settings').get('mail_from');
 	mail_secure = Homey.manager('settings').get('mail_secure');
-	//enable polling?
+	
 	enablepolling = Homey.manager('settings').get('enablepolling');
-	//settimeout etc
+	if (enablepolling) setTimeout(polling (true), 10000);
+
 }
 
 module.exports.init = function(devices_data, callback) {
@@ -491,3 +492,71 @@ Homey.manager('flow').on('condition.recording', function(callback, args){
 	
 });
 //
+
+function polling(init) {
+	
+	devices.forEach(function initdevice(device) {
+		
+		Homey.log ('checking device ' + JSON.stringify (device));
+		
+		var options = {
+			api 		: 'SYNO.SurveillanceStation.Camera',
+			version		: '1',
+			method		: 'GetInfo',
+			cameraIds	: device.id,
+			hostname 	: device.hostname,
+			username 	: device.username,
+			password 	: device.password,
+			port 		: device.port
+		};
+	
+		login(options, function (sid) {
+			options._sid = sid;
+			execute_command (options, snappath, false, false, function (data) {
+				
+				//first initialisation, only save the status, don't trigger
+				if (init) {
+					
+					devices[device.id].recStatus = data.data.cameras[0].recStatus
+					devices[device.id].camStatus = data.data.cameras[0].camStatus;
+					
+				} else {
+					
+					if (data.data.cameras[0].recStatus != device.recStatus) {
+						
+						devices[device.id].recStatus = data.data.cameras[0].recStatus;
+						
+						Homey.log('recording status: ' + data.data.cameras[0].recStatus);
+						
+						if (devices[device.id].recStatus != 0) {
+							Homey.manager('flow').trigger('recording_starts');
+						} else {
+							Homey.manager('flow').trigger('recording_stops');
+						}
+					}
+					
+					if (data.data.cameras[0].camStatus != device.camStatus) {
+						
+						devices[device.id].camStatus = data.data.cameras[0].camStatus;
+
+						Homey.log('cam status: ' + data.data.cameras[0].camStatus);
+						
+						if (devices[device.id].camStatus == 1) {
+							Homey.manager('flow').trigger('cam_available');
+						} else {
+							Homey.manager('flow').trigger('cam_unavailable');
+						}
+						
+					}
+					
+				}
+				
+				
+			});	
+		});
+		
+	});
+	
+	if (enablepolling) setTimeout(polling, 10000);
+
+}
