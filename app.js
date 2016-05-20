@@ -1,11 +1,5 @@
 "use strict";
 
-function init() {
-	
-	Homey.log("Init Synology Surveillance Station app - done");
-	
-}
-
 function testmail (args, callback) {
 	
 	var nodemailer = require('nodemailer');
@@ -43,5 +37,3 @@ function testmail (args, callback) {
 
 
 module.exports.testmail = testmail;
-
-module.exports.init = init;

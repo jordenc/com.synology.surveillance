@@ -29,6 +29,29 @@ function updatesettings() {
 	//settimeout etc
 }
 
+module.exports.init = function(devices_data, callback) {
+	
+	devices_data.forEach(function initdevice(device) {
+	    
+	    Homey.log('add device: ' + JSON.stringify(device));
+	    
+	    devices[device.id] = device;
+	    
+	});
+	
+	callback (null, true);
+	
+};
+
+module.exports.deleted = function( device_data ) {
+    
+    Homey.log('deleted: ' + JSON.stringify(device_data));
+    
+    devices[device_data.id] = [];
+	
+};
+
+	
 module.exports.pair = function (socket) {
 
 	// socket is a direct channel to the front-end
@@ -44,11 +67,7 @@ module.exports.pair = function (socket) {
 			var device = tempdevices[key];
 			
 			Homey.log ('device=' + device.name);
-			Homey.log ('ip=' + device.host);
-			Homey.log ('model=' + device.model);
-			Homey.log ('username=' + tempdata.username);
 			
-			//moet user/pass/host/port in settings?
 			devices.push(
 				{
 					data: {
@@ -58,7 +77,7 @@ module.exports.pair = function (socket) {
 						username	: tempdata.username,
 						password	: tempdata.password,
 						hostname	: tempdata.hostname,
-						port		: tempdata.port,
+						port		: tempdata.port
 						
 					},
 					name: device.name
@@ -276,7 +295,7 @@ function execute_command (options, path, callback, logincall, outputcallback) {
 							
 						}
 						
-						Homey.log('[BODY] ' + body);
+						//Homey.log('[BODY] ' + body);
 					} catch (e) {
 						
 						callback (e, false);
@@ -288,7 +307,7 @@ function execute_command (options, path, callback, logincall, outputcallback) {
 					try {
 						var parsed = JSON.parse(body);
 						
-						Homey.log('parsed='+JSON.stringify(parsed));
+						//Homey.log('parsed='+JSON.stringify(parsed));
 						if (typeof logincall === "function") logincall(parsed.data.sid);	
 	
 					} catch (e) {
@@ -392,12 +411,13 @@ Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 				});
 				
 				Homey.log('devices=' + JSON.stringify (devices));
+				Homey.log('args=' + JSON.stringify (args));
 			    
 			    var mailOptions = {
 					
 					from: 'Homey <' + mail_from + '>',
 				    to: args.mailto,
-				    subject: 'Snapshot ' + devices[args.device.id].naam,
+				    subject: 'Snapshot from camera #' + devices[args.device.id].id,
 				    text: '',
 				    html: '',
 			    
@@ -426,9 +446,9 @@ Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 			
 	} else {
 		
-		Homey.log('Not all required variables for mailing have been set');
+		Homey.log(__("not_all_vars_set"));
 	    
-		callback ('Not all required variables for mailing have been set', false);
+		callback (__("not_all_vars_set"), false);
 		
 	}
 	
