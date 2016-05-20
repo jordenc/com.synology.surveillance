@@ -6,7 +6,7 @@ var tempdevices, tempdata;
 var devices = [];
 var recordpath, snappath;
 var sid;
-var mail_user, mail_pass, mail_host, mail_port, mail_from;
+var mail_user, mail_pass, mail_host, mail_port, mail_from, mail_secure;
 var enablepolling;
 
 Homey.manager('settings').on('set', function (name) {
@@ -97,18 +97,6 @@ module.exports.pair = function (socket) {
 	socket.on('get_devices', function (data, callback) {
 		
 		Homey.log ( "Synology Surveillance Station app - got get_devices from front-end, hostname =" + data.hostname );
-
-		/*
-		var options = [];
-		options["api"] 		= 'SYNO.SurveillanceStation.Camera';
-		options["version"]	= '1';
-		options["method"]	= 'List';
-		options["query"]	= 'ALL';
-		options["hostname"] = data.hostname;
-		options["username"] = data.username;
-		options["password"] = data.password;
-		options["port"] = data.port;
-		*/
 		
 		var options = {
 			
@@ -419,7 +407,7 @@ Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 					
 					from: 'Homey <' + mail_from + '>',
 				    to: args.mailto,
-				    subject: __("snapshot_from")' #' + devices[args.device.id].id,
+				    subject: __("snapshot_from") + ' #' + devices[args.device.id].id,
 				    text: '',
 				    html: '',
 			    
@@ -440,11 +428,8 @@ Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 				    callback (null, true);
 				});
 				
-				logout(options);
-				
 			});	
 		});
-
 			
 	} else {
 		
@@ -476,8 +461,6 @@ Homey.manager('flow').on('condition.available', function(callback, args){
 			
 			if (data.data.cameras[0].camStatus == 1) callback (null, true); else callback (null, false);
 			
-			logout(options);
-			
 		});	
 	});
 	
@@ -502,8 +485,6 @@ Homey.manager('flow').on('condition.recording', function(callback, args){
 		execute_command (options, snappath, false, false, function (data) {
 			
 			if (data.data.cameras[0].recStatus != 0) callback (null, true); else callback (null, false);
-			
-			logout(options);
 			
 		});	
 	});

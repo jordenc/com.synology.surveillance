@@ -72,7 +72,8 @@
                     }
                 }
             ]
-        },
+        }
+        ],
         "actions": [
         {
             "id": "startRecording",

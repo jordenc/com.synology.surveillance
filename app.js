@@ -1,5 +1,6 @@
 "use strict";
 
+/*
 function testmail (args, callback) {
 	
 	var nodemailer = require('nodemailer');
@@ -38,3 +39,4 @@ function testmail (args, callback) {
 
 
 module.exports.testmail = testmail;
+*/

@@ -5,12 +5,14 @@ module.exports = [
         path:			'/settings/',
         fn: function( callback, args ){
             
+            Homey.log('Testing email...');
            var nodemailer = require('nodemailer');
 			
 			var transporter = nodemailer.createTransport(
 			{
 				host: args.body.mail_host,
 				port: args.body.mail_port,
+				secure: args.body.mail_secure,
 				auth: {
 					user: args.body.mail_user,
 					pass: args.body.mail_password

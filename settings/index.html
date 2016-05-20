@@ -95,7 +95,7 @@
 		    
 		    Homey.get('mail_secure', function(err, mail_secure){
 		       if( err ) return console.error('Could not get mail_secure', err);
-		       document.getElementById('mail_secure').checked = mail_secure; 
+		       document.getElementById('secure').checked = mail_secure; 
 		    });
 		     
             Homey.ready();
@@ -113,7 +113,7 @@
             Homey.set('mail_port', document.getElementById('port').value);
             Homey.set('mail_from', document.getElementById('sender').value);
             Homey.set('enablepolling', document.getElementById('enablepolling').checked);
-            Homey.set('mail_secure', document.getElementById('mail_secure').checked);
+            Homey.set('mail_secure', document.getElementById('secure').checked);
             
             console.log ("saved the settings!");
             
@@ -139,7 +139,7 @@
 			    "mail_host": document.getElementById('hostname').value,
 			    "mail_port": document.getElementById('port').value,
 			    "mail_from": document.getElementById('sender').value,
-			    "mail_secure": document.getElementById('mail_secure').checked
+			    "mail_secure": document.getElementById('secure').checked
 			}, function( msg, result ){
 			    
 			    document.getElementById('testresult').innerHTML = msg;
