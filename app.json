@@ -54,6 +54,25 @@
         }
     ], 
     "flow": {
+	    "triggers": [
+        {
+            "id": "recording_starts",
+            "title": {
+                "en": "Started recording",
+                "nl": "Opname is gestart"
+            },
+            "tokens": [
+                {
+                    "name": "mm_per_hour",
+                    "title": {
+                        "en": "mm/h"
+                    },
+                    "example": {
+                        "en": "5"
+                    }
+                }
+            ]
+        },
         "actions": [
         {
             "id": "startRecording",

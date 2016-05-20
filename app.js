@@ -8,6 +8,7 @@ function testmail (args, callback) {
 	{
 		host: args.mail_host,
 		port: args.mail_port,
+		secure: args.mail_secure,
 		auth: {
 			user: args.mail_user,
 			pass: args.mail_password

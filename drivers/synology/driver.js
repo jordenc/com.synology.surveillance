@@ -24,6 +24,7 @@ function updatesettings() {
 	mail_host = Homey.manager('settings').get('mail_host');
 	mail_port = Homey.manager('settings').get('mail_port');
 	mail_from = Homey.manager('settings').get('mail_from');
+	mail_secure = Homey.manager('settings').get('mail_secure');
 	//enable polling?
 	enablepolling = Homey.manager('settings').get('enablepolling');
 	//settimeout etc
@@ -403,6 +404,7 @@ Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 				{
 					host: mail_host,
 					port: mail_port,
+					secure: mail_secure,
 					auth: {
 						user: mail_user,
 						pass: mail_pass

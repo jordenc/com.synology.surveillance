@@ -25,7 +25,8 @@
 	  	"testmailSettings": "Test mailinstellingen",
 	  	"gmailexplanation": "Als u gebruik wenst te maken van de SMTP servers van Gmail, moeten eerst 'minder veilige apps' toegang krijgen tot uw GMail account. Ga naar <a href='https://www.google.com/settings/security/lesssecureapps' target='_blank'>https://www.google.com/settings/security/lesssecureapps</a> om dit in te schakelen.",
 	  	"polling": "Statuschecks",
-	  	"enablepolling": "Schakel statuschecks in om acties in Homey te kunnen koppelen aan acties van buitenaf"
+	  	"enablepolling": "Schakel statuschecks in om acties in Homey te kunnen koppelen aan acties van buitenaf",
+	  	"encrypted_connection": "Gebruik gecodeerde verbinding"
   	},
   	"not_all_vars_set": "Niet alle benodigde gegevens zijn ingesteld",
   	"snapshot_from": "Snapshot van camera"
