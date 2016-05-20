@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.0 2016-02-11
+
+  * Added new option `timeout`
+
 ## v1.2.1 2016-01-18
 
   * Enclose http.request into try..catch to get url parse errors

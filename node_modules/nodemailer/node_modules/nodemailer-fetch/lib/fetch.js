@@ -101,6 +101,17 @@ function fetch(url, options) {
         return fetchRes;
     }
 
+    if (options.timeout) {
+        req.setTimeout(options.timeout, function () {
+            if (finished) {
+                return;
+            }
+            finished = true;
+            req.abort();
+            fetchRes.emit('error', new Error('Request Tiemout'));
+        });
+    }
+
     req.on('error', function (err) {
         if (finished) {
             return;

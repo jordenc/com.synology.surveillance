@@ -113,6 +113,14 @@ describe('fetch tests', function () {
                     res.end();
                     break;
 
+                case '/forever':
+                    res.writeHead(200, {
+                        'Content-Type': 'text/plain'
+                    });
+                    res.write('This connection is never closed');
+                    // never end the request
+                    break;
+
                 case '/gzip':
                     res.writeHead(200, {
                         'Content-Type': 'text/plain',
@@ -328,6 +336,21 @@ describe('fetch tests', function () {
 
     it('should return error for invalid url', function (done) {
         var req = fetch('http://localhost:99999999/');
+        var buf = [];
+        req.on('data', function (chunk) {
+            buf.push(chunk);
+        });
+        req.on('error', function (err) {
+            expect(err).to.exist;
+            done();
+        });
+        req.on('end', function () {});
+    });
+
+    it('should return timeout error', function (done) {
+        var req = fetch('http://localhost:' + HTTP_PORT + '/forever', {
+            timeout: 1000
+        });
         var buf = [];
         req.on('data', function (chunk) {
             buf.push(chunk);

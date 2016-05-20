@@ -19,8 +19,10 @@ Use at your own risk, I accept no responsibility for any damages caused by using
 
 # Changelog
 **Version 1.1.0**
+- Removed requirement of external node modules, which makes the package much smaller
+
 **Version 1.0.3:**
-- There now is a 'test' button in the settings menu. This will test your mail settings and display it either being sent succesful, or return the error.
+- There now is a 'test' button in the settings menu. This will test your mail settings and display it either being sent successful, or return the error.
 
 **Version 1.0.0:**
 Initial version

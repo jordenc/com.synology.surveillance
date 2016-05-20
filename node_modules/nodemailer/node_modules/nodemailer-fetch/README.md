@@ -35,6 +35,7 @@ Possible options are the following:
   * **body** HTTP payload to send. If the value is an object it is converted to an *x-www-form-urlencoded* payload, other values are passed as is. Unlike authentication data payload and method is preserved between redirects
   * **contentType** optional content type for the HTTP payload. Defaults to *x-www-form-urlencoded*
   * **tls** optional object of TLS options
+  * **timeout** (milliseconds) sets timeout for the connection. Returns an error if timeout occurs
 
   ```javascript
   var fetch = require('nodemailer-fetch');

@@ -42,6 +42,18 @@ describe('Connection url parser tests', function () {
             name: 'horizon'
         });
     });
+
+    it('should not choke on special symbols in auth', function () {
+        var url = 'smtps://user%40gmail.com:%3Apasswith%25Char@smtp.gmail.com';
+        expect(shared.parseConnectionUrl(url)).to.deep.equal({
+            secure: true,
+            host: 'smtp.gmail.com',
+            auth: {
+                user: 'user@gmail.com',
+                pass: ':passwith%Char'
+            }
+        });
+    });
 });
 
 describe('Resolver tests', function () {

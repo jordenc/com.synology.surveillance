@@ -45,8 +45,8 @@ module.exports.parseConnectionUrl = function (str) {
                 options.auth = {};
             }
 
-            options.auth.user = decodeURIComponent(auth[0]);
-            options.auth.pass = decodeURIComponent(auth[1]);
+            options.auth.user = auth.shift();
+            options.auth.pass = auth.join(':');
         }
 
         Object.keys(url.query || {}).forEach(function (key) {

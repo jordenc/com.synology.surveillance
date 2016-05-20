@@ -49,7 +49,7 @@
         <fieldset>
 	        <legend data-i18n="settings.polling">Polling</legend>
         
-			<input type="checkbox" id="polling"><label data-i18n="settings.enablepolling"></label>
+			<input type="checkbox" id="enablepolling"><label data-i18n="settings.enablepolling"></label>
         
         </fieldset>
         <div id="testresult"></div>
@@ -83,7 +83,12 @@
 		       if( err ) return console.error('Could not get mail_sender', err);
 		       document.getElementById('sender').value = mail_sender; 
 		    });
-		    
+		   	
+		   	Homey.get('enablepolling', function(err, enablepolling){
+		       if( err ) return console.error('Could not get enablepolling', err);
+		       document.getElementById('enablepolling').checked = enablepolling; 
+		    });
+		     
             Homey.ready();
         }
 
@@ -98,6 +103,7 @@
             Homey.set('mail_host', document.getElementById('hostname').value);
             Homey.set('mail_port', document.getElementById('port').value);
             Homey.set('mail_from', document.getElementById('sender').value);
+            Homey.set('enablepolling', document.getElementById('enablepolling').checked);
             
             console.log ("saved the settings!");
             
