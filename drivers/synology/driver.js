@@ -222,7 +222,7 @@ function execute_command (options, path, callback, logincall, outputcallback) {
 		
 	}
 	
-	Homey.log('query = ' + path + JSON.stringify(query));
+	//Homey.log('query = ' + path + JSON.stringify(query));
 	
 	try {
 		http.get({
@@ -390,12 +390,14 @@ Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 					},
 					tls: {rejectUnauthorized: false} 
 				});
+				
+				Homey.log('devices=' + JSON.stringify (devices));
 			    
 			    var mailOptions = {
 					
 					from: 'Homey <' + mail_from + '>',
 				    to: args.mailto,
-				    subject: 'Snapshot from camera #' + args.device.id,
+				    subject: 'Snapshot ' + devices[args.device.id].naam,
 				    text: '',
 				    html: '',
 			    
