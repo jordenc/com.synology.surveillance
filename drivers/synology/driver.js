@@ -34,9 +34,19 @@ function updatesettings() {
 module.exports.init = function(devices_data, callback) {
 	
 	devices_data.forEach(function initdevice(device) {
-	    
-	    Homey.log('add device: ' + JSON.stringify(device));
-	    
+	   
+	    //migrate from older versions (< 1.1.0):
+		if (typeof device.username === "undefined" || device.username == '') {
+			
+			device.hostname = Homey.manager('settings').get('hostname');
+			device.username = Homey.manager('settings').get('username');
+			device.password = Homey.manager('settings').get('password');
+			device.port	 = Homey.manager('settings').get('port');
+	
+		};
+		
+		Homey.log('add device: ' + JSON.stringify(device));
+			    
 	    devices[device.id] = device;
 	    
 	});
