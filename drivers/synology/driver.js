@@ -561,12 +561,12 @@ function polling(init) {
 					
 				}
 				
+				if (enablepolling) setTimeout(polling, 10000);
+				
 				
 			});	
 		});
 		
 	});
-	
-	if (enablepolling) setTimeout(polling, 10000);
 
 }
