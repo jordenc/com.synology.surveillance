@@ -22,6 +22,9 @@ The following cards are available:
 Use at your own risk, I accept no responsibility for any damages caused by using this script.
 
 # Changelog
+**Version 1.1.1**
+- Small bug fixes
+
 **Version 1.1.0**
 - Removed requirement of external node modules, which makes the package much smaller
 - Now supports multiple Synology NAS devices, settings get stored per camera

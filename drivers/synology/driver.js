@@ -27,7 +27,7 @@ function updatesettings() {
 	mail_secure = Homey.manager('settings').get('mail_secure');
 	
 	enablepolling = Homey.manager('settings').get('enablepolling');
-	if (enablepolling) setTimeout(polling (true), 10000);
+	if (enablepolling) setTimeout(polling (true), 15000);
 
 }
 
@@ -36,14 +36,14 @@ module.exports.init = function(devices_data, callback) {
 	devices_data.forEach(function initdevice(device) {
 	   
 	    //migrate from older versions (< 1.1.0):
-		if (typeof device.username === "undefined" || device.username == '') {
+		if (typeof device.username === "undefined" || device.username === '') {
 			
 			device.hostname = Homey.manager('settings').get('hostname');
 			device.username = Homey.manager('settings').get('username');
 			device.password = Homey.manager('settings').get('password');
 			device.port	 = Homey.manager('settings').get('port');
 	
-		};
+		}
 		
 		Homey.log('add device: ' + JSON.stringify(device));
 			    
@@ -74,6 +74,8 @@ module.exports.pair = function (socket) {
 
 		Homey.log("Synology Surveillance Station app - list_devices called" );
 		
+		var new_devices = [];
+		
 		for (var key in tempdevices) {
 			
 			var device = tempdevices[key];
@@ -81,6 +83,19 @@ module.exports.pair = function (socket) {
 			Homey.log ('device=' + device.name);
 			
 			devices.push(
+				{
+					id			: device.id,
+					ipaddress 	: device.host,
+					model		: device.model,
+					username	: tempdata.username,
+					password	: tempdata.password,
+					hostname	: tempdata.hostname,
+					port		: tempdata.port,
+					name		: device.name
+				}
+			);
+			
+			new_devices.push(
 				{
 					data: {
 						id			: device.id,
@@ -96,11 +111,11 @@ module.exports.pair = function (socket) {
 				}
 			);
 			
-		}
+		};
 
 
-		Homey.log ('callback with ' + JSON.stringify(devices));
-		callback (null, devices);
+		Homey.log ('callback with ' + JSON.stringify(new_devices));
+		callback (null, new_devices);
 
 	});
 
@@ -256,6 +271,8 @@ function execute_command (options, path, callback, logincall, outputcallback) {
 	        });
 	        response.on('end', function() {
 		        
+		        Homey.log('RESPONSE END ' + JSON.stringify (body));
+		        
 		        if (!logincall) logout (options);
 		        
 		        if (outputcallback) {
@@ -321,6 +338,7 @@ function execute_command (options, path, callback, logincall, outputcallback) {
 	        });
 	        response.on('error', function (e) {
 		        
+		        Homey.log('RESPONSE ERROR: ' + e);
 		        callback (e, false);
 				
 	        });
@@ -561,7 +579,7 @@ function polling(init) {
 					
 				}
 				
-				if (enablepolling) setTimeout(polling, 10000);
+				if (enablepolling) setTimeout(polling, 15000);
 				
 				
 			});	
