@@ -258,94 +258,102 @@ function execute_command (options, path, callback, logincall, outputcallback) {
 	
 	//Homey.log('query = ' + path + JSON.stringify(query));
 	
-	try {
-		http.get({
-	        host: options.hostname,
-	        port: options.port,
-	        path: path + query
-	    }, function(response) {
-	        // Continuously update stream with data
-	        var body = '';
-	        response.on('data', function(d) {
-	            body += d;
-	        });
-	        response.on('end', function() {
-		        
-		        Homey.log('RESPONSE END ' + JSON.stringify (body));
-		        
-		        if (!logincall) logout (options);
-		        
-		        if (outputcallback) {
-			        
-			        try {
-						var parsed = JSON.parse(body);
-						
-						if (parsed.success == true) {
-			
-							outputcallback (parsed);
-																		
-						} else {
-							
-							//callback (null, false);
-							
-						}
-						
-					} catch (e) {
-						
-						Homey.log('error: ' + e);
-					}
-			        
-		        }
+	if (options.hostname && options.port) {
 	
-				if (callback) {
-					
-					try {
-						var parsed = JSON.parse(body);
-						
-						if (parsed.success == true) {
-			
-							callback (null, true);
-											
-						} else {
+		try {
+			http.get({
+		        host: options.hostname,
+		        port: options.port,
+		        path: path + query
+		    }, function(response) {
+		        // Continuously update stream with data
+		        var body = '';
+		        response.on('data', function(d) {
+		            body += d;
+		        });
+		        response.on('end', function() {
+			        
+			        Homey.log('RESPONSE END ' + JSON.stringify (body));
+			        
+			        if (!logincall) logout (options);
+			        
+			        if (outputcallback) {
+				        
+				        try {
+							var parsed = JSON.parse(body);
 							
-							callback (null, false);
+							if (parsed.success == true) {
+				
+								outputcallback (parsed);
+																			
+							} else {
+								
+								//callback (null, false);
+								
+							}
 							
+						} catch (e) {
+							
+							Homey.log('error: ' + e);
 						}
-						
-						//Homey.log('[BODY] ' + body);
-					} catch (e) {
-						
-						callback (e, false);
-						
-					}
-					
-				} else {
-					
-					try {
-						var parsed = JSON.parse(body);
-						
-						//Homey.log('parsed='+JSON.stringify(parsed));
-						if (typeof logincall === "function") logincall(parsed.data.sid);	
-	
-					} catch (e) {
-						
-						if (typeof logincall === "function") logincall(false);
-						
-					}
-					
-				}
-				
-	        });
-	        response.on('error', function (e) {
-		        
-		        Homey.log('RESPONSE ERROR: ' + e);
-		        callback (e, false);
-				
-	        });
-	    });
-	} catch (e) {
+				        
+			        }
 		
-		Homey.log('[ERROR HTTP.GET] ' + e);
+					if (callback) {
+						
+						try {
+							var parsed = JSON.parse(body);
+							
+							if (parsed.success == true) {
+				
+								callback (null, true);
+												
+							} else {
+								
+								callback (null, false);
+								
+							}
+							
+							//Homey.log('[BODY] ' + body);
+						} catch (e) {
+							
+							callback (e, false);
+							
+						}
+						
+					} else {
+						
+						try {
+							var parsed = JSON.parse(body);
+							
+							//Homey.log('parsed='+JSON.stringify(parsed));
+							if (typeof logincall === "function") logincall(parsed.data.sid);	
+		
+						} catch (e) {
+							
+							if (typeof logincall === "function") logincall(false);
+							
+						}
+						
+					}
+					
+		        });
+		        response.on('error', function (e) {
+			        
+			        Homey.log('RESPONSE ERROR: ' + e);
+			        callback (e, false);
+					
+		        });
+		    });
+		} catch (e) {
+			
+			Homey.log('[ERROR HTTP.GET] ' + e);
+			
+		}
+		
+	} else {
+		
+		Homey.log ('No hostname or port set: ' + options.hostname + ':' + options.port);
 		
 	}
 
@@ -398,7 +406,7 @@ Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 
 	Homey.log('take snapshot & mail - ' + snappath);
 	
-	if ( typeof mail_user !== 'undefined' && typeof mail_pass !== 'undefined' && typeof mail_host !== 'undefined' && typeof mail_port !== 'undefined' && typeof mail_from !== 'undefined') {
+	if ( typeof mail_user !== 'undefined' && typeof mail_pass !== 'undefined' && typeof mail_host !== 'undefined' && typeof mail_port !== 'undefined' && typeof mail_from !== 'undefined' && mail_user != '' && mail_pass != '' && mail_host != '' && mail_port != '') {
 	
 		var options = {
 			api 		: 'SYNO.SurveillanceStation.SnapShot',

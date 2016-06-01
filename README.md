@@ -1,6 +1,8 @@
 # com.synology.surveillance
 Control Synology Surveillance Station from Homey (www.athom.com)
 
+**Want to show your appreciation for this app? A donation is possible via http://www.d2c.nl **
+
 To be able to use this app, you need to supply the app with the IP of the Synology NAS, as well as the username and password of an admin. 
 
 1. Make sure to add a user that doesn't require 2 factor authentication. 
@@ -22,6 +24,9 @@ The following cards are available:
 Use at your own risk, I accept no responsibility for any damages caused by using this script.
 
 # Changelog
+**Version 1.1.2**
+- Small bug fixes
+
 **Version 1.1.1**
 - Small bug fixes
 
