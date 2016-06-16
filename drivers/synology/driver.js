@@ -51,6 +51,11 @@ module.exports.init = function(devices_data, callback) {
 	    
 	});
 	
+	
+	enablepolling = Homey.manager('settings').get('enablepolling');
+	if (enablepolling) setTimeout(polling (true), 15000);
+	Homey.log('enablepolling = ' + enablepolling);
+	
 	callback (null, true);
 	
 };
@@ -565,9 +570,9 @@ function polling(init) {
 						Homey.log('recording status: ' + data.data.cameras[0].recStatus);
 						
 						if (devices[device.id].recStatus != 0) {
-							Homey.manager('flow').trigger('recording_starts');
+							Homey.manager('flow').triggerDevice('recording_starts', {}, {device: device.id});
 						} else {
-							Homey.manager('flow').trigger('recording_stops');
+							Homey.manager('flow').triggerDevice('recording_stops', {}, {device: device.id});
 						}
 					}
 					
@@ -578,9 +583,9 @@ function polling(init) {
 						Homey.log('cam status: ' + data.data.cameras[0].camStatus);
 						
 						if (devices[device.id].camStatus == 1) {
-							Homey.manager('flow').trigger('cam_available');
+							Homey.manager('flow').triggerDevice('cam_available', {}, {device: device.id});
 						} else {
-							Homey.manager('flow').trigger('cam_unavailable');
+							Homey.manager('flow').triggerDevice('cam_unavailable', {}, {device: device.id});
 						}
 						
 					}

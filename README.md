@@ -24,6 +24,10 @@ The following cards are available:
 Use at your own risk, I accept no responsibility for any damages caused by using this script.
 
 # Changelog
+**Version 1.1.3**
+- Triggers now work correctly
+- Polling didn't survive a restart of the app, fixed
+
 **Version 1.1.2**
 - Small bug fixes
 
