@@ -349,7 +349,13 @@ function execute_command (options, path, callback, logincall, outputcallback) {
 			        callback (e, false);
 					
 		        });
-		    });
+		    })
+		    .on('error', function (e) {
+			    
+			    Homey.log('HTTP.GET ERROR: ' + e);
+			    callback (e, false);
+			        
+			});
 		} catch (e) {
 			
 			Homey.log('[ERROR HTTP.GET] ' + e);

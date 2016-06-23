@@ -24,6 +24,9 @@ The following cards are available:
 Use at your own risk, I accept no responsibility for any damages caused by using this script.
 
 # Changelog
+**Version 1.1.4**
+- Better error handling in case of 'Socket hangup'. Synology devices do that sometimes.
+
 **Version 1.1.3**
 - Triggers now work correctly
 - Polling didn't survive a restart of the app, fixed
