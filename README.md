@@ -24,6 +24,9 @@ The following cards are available:
 Use at your own risk, I accept no responsibility for any damages caused by using this script.
 
 # Changelog
+**Version 1.1.5**
+- After "error code 105" the polling stopped. I hope this update solves it.
+
 **Version 1.1.4**
 - Better error handling in case of 'Socket hangup'. Synology devices do that sometimes.
 

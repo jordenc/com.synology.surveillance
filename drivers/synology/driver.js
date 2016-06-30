@@ -542,6 +542,8 @@ Homey.manager('flow').on('condition.recording', function(callback, args){
 
 function polling(init) {
 	
+	if (enablepolling) setTimeout(polling, 15000);
+				
 	devices.forEach(function initdevice(device) {
 		
 		Homey.log ('checking device ' + JSON.stringify (device));
@@ -597,9 +599,6 @@ function polling(init) {
 					}
 					
 				}
-				
-				if (enablepolling) setTimeout(polling, 15000);
-				
 				
 			});	
 		});
