@@ -353,7 +353,7 @@ function execute_command (options, path, callback, logincall, outputcallback) {
 		    .on('error', function (e) {
 			    
 			    Homey.log('HTTP.GET ERROR: ' + e);
-			    if (typeof callback === "function") callback (e, false);
+			    if (typeof callback == 'function') callback (e, false);
 			        
 			});
 		} catch (e) {

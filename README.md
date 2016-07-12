@@ -24,6 +24,9 @@ The following cards are available:
 Use at your own risk, I accept no responsibility for any damages caused by using this script.
 
 # Changelog
+**Version 1.1.7**
+- Better error catching to prevent crashing app.
+
 **Version 1.1.6**
 - Better error catching to prevent crashing app.
 
