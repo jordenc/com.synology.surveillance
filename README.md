@@ -14,6 +14,8 @@ The following cards are available:
 - [ACTION] Stop recording
 - [ACTION] Take snapshot (will go to /USERNAME/@Snapshot/ on your Synology)
 - [ACTION] Mail snapshot (first fill in SMTP settings under 'Settings' in Homey!)
+- [ACTION] Enable camera
+- [ACTION] Disable camera
 - [CONDITION] Is the camera recording?
 - [CONDITION] Is the camera available?
 - [TRIGGER] Starts recording (require enable_polling checked on settings page)
@@ -24,6 +26,9 @@ The following cards are available:
 Use at your own risk, I accept no responsibility for any damages caused by using this script.
 
 # Changelog
+**Version 1.2.0**
+- New action cards that enable and disable a camera.
+
 **Version 1.1.7**
 - Better error catching to prevent crashing app.
 

@@ -413,6 +413,52 @@ Homey.manager('flow').on('action.snapshot', function (callback, args) {
 	
 });
 
+Homey.manager('flow').on('action.enable', function (callback, args) {
+	
+	var options = {
+		api 		: 'SYNO.SurveillanceStation.Camera',
+		version		: '3',
+		method		: 'Enable',
+		cameraIds		: args.device.id,
+		hostname 	: args.device.hostname,
+		username 	: args.device.username,
+		password 	: args.device.password,
+		port 		: args.device.port
+	};
+
+	login(options, function (sid) {
+		options._sid = sid;
+		execute_command (options, snappath, callback);
+		
+		logout(options);
+	
+	});
+	
+});
+
+Homey.manager('flow').on('action.disable', function (callback, args) {
+	
+	var options = {
+		api 		: 'SYNO.SurveillanceStation.Camera',
+		version		: '3',
+		method		: 'Disable',
+		cameraIds		: args.device.id,
+		hostname 	: args.device.hostname,
+		username 	: args.device.username,
+		password 	: args.device.password,
+		port 		: args.device.port
+	};
+
+	login(options, function (sid) {
+		options._sid = sid;
+		execute_command (options, snappath, callback);
+		
+		logout(options);
+	
+	});
+	
+});
+
 Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 
 	Homey.log('take snapshot & mail - ' + snappath);
