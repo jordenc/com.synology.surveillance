@@ -4,7 +4,7 @@
         "en": "Synology Surveillance Station",
         "nl": "Synology Surveillance Station"
     },
-    "version": "1.2.0",
+    "version": "1.2.1",
     "compatibility": ">=0.8.29",
     "author": {
         "name": "Chamid Media",
@@ -34,7 +34,7 @@
 			  	"small": "drivers/synology/assets/images/small.jpg"
           	},
             "class": "other",
-            "capabilities": [ "" ],
+            "capabilities": [],
             "pair": [
                 {
                     "id": "start"
