@@ -45,7 +45,7 @@ module.exports.init = function(devices_data, callback) {
 	
 		}
 		
-		Homey.log('add device: ' + JSON.stringify(device));
+		//Homey.log('add device: ' + JSON.stringify(device));
 			    
 	    devices[device.id] = device;
 	    
@@ -419,7 +419,7 @@ Homey.manager('flow').on('action.enable', function (callback, args) {
 		api 		: 'SYNO.SurveillanceStation.Camera',
 		version		: '3',
 		method		: 'Enable',
-		cameraIds		: args.device.id,
+		cameraIds	: args.device.id,
 		hostname 	: args.device.hostname,
 		username 	: args.device.username,
 		password 	: args.device.password,
@@ -428,9 +428,13 @@ Homey.manager('flow').on('action.enable', function (callback, args) {
 
 	login(options, function (sid) {
 		options._sid = sid;
-		execute_command (options, snappath, callback);
-		
-		logout(options);
+		execute_command (options, snappath, false, false, function (data) {
+			
+			if (data.data.success == true) callback (null, true); else callback (data.error.code, false);
+			
+			logout(options);
+			
+		});
 	
 	});
 	
@@ -442,7 +446,7 @@ Homey.manager('flow').on('action.disable', function (callback, args) {
 		api 		: 'SYNO.SurveillanceStation.Camera',
 		version		: '3',
 		method		: 'Disable',
-		cameraIds		: args.device.id,
+		cameraIds	: args.device.id,
 		hostname 	: args.device.hostname,
 		username 	: args.device.username,
 		password 	: args.device.password,
@@ -451,9 +455,13 @@ Homey.manager('flow').on('action.disable', function (callback, args) {
 
 	login(options, function (sid) {
 		options._sid = sid;
-		execute_command (options, snappath, callback);
-		
-		logout(options);
+		execute_command (options, snappath, false, false, function (data) {
+			
+			if (data.data.success == true) callback (null, true); else callback (data.error.code, false);
+			
+			logout(options);
+			
+		});
 	
 	});
 	

@@ -26,6 +26,9 @@ The following cards are available:
 Use at your own risk, I accept no responsibility for any damages caused by using this script.
 
 # Changelog
+**Version 1.2.2**
+- Small bugfix regarding enable/disable cards
+
 **Version 1.2.1**
 - Fixed bug causing devices not being able to add on Homey firmware 0.9.1
 
