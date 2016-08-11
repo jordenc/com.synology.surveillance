@@ -31,11 +31,53 @@ function updatesettings() {
 
 }
 
-module.exports.getDevices = function(callback) {
+//returns the devices to api.js / external devices
+module.exports.getDevices = function() {
 
 	return devices;
 	
 }
+
+//Returns the data of a taken snapshot (to api.js / external apps)
+module.exports.return_snapshot = function(callback, required_device) {
+	
+	devices.forEach(function snapshot(device) {
+						
+		if (device != null) {
+									
+			if (device.id == required_device) {
+	
+				var options = {
+					api 		: 'SYNO.SurveillanceStation.SnapShot',
+					version		: '1',
+					method		: 'TakeSnapshot',
+					camId		: device.id,
+					blSave		: 'false',
+					dsId		: '0',
+					hostname 	: device.hostname,
+					username 	: device.username,
+					password 	: device.password,
+					port 		: device.port
+				};
+			
+				login(options, function (sid) {
+					options._sid = sid;
+					execute_command (options, snappath, false, false, function (data) {
+						
+						callback (null, data.data.imageData);
+						
+					});	
+				});
+				
+			}
+			
+		}
+		
+	});
+
+}
+
+
 
 module.exports.init = function(devices_data, callback) {
 	

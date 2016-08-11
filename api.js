@@ -57,5 +57,28 @@ module.exports = [
           
 			
         }
+    },
+    {
+        description:		'Take a snapshot',
+        method: 		'GET',
+        path:			'/get_snapshot/:id',
+
+        fn: function( callback, args ){
+           
+           Homey.log('Taking a snapshot: ' + JSON.stringify (args));
+          
+           Homey.manager("drivers")
+			.getDriver("synology")
+			.return_snapshot(callback, args.params.id);
+		   /*
+		   var snapshot = Homey.manager("drivers")
+			.getDriver("synology")
+			.return_snapshot(args.params.id);
+			
+			Homey.log("__________________________SNAPSHOT: " + JSON.stringify(snapshot));
+			callback (null, snapshot);
+			*/
+			
+        }
     }
 ]
