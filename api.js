@@ -5,7 +5,7 @@ module.exports = [
         path:			'/settings/',
         fn: function( callback, args ){
             
-            Homey.log('Testing email...');
+           Homey.log('Testing email...');
            var nodemailer = require('nodemailer');
 			
 			var transporter = nodemailer.createTransport(
@@ -37,6 +37,24 @@ module.exports = [
 			    Homey.log('Message sent: ' + info.response);
 			    callback ('Message sent: ' + info.response, true);
 			});
+			
+        }
+    },
+    {
+        description:		'Get a list of available devices',
+        method: 		'GET',
+        path:			'/get_devices/',
+
+        fn: function( callback, args ){
+           
+           Homey.log('Show a list of available devices');
+          
+           var devices = Homey.manager("drivers")
+			.getDriver("synology")
+			.getDevices();
+			
+			callback (null, devices);
+          
 			
         }
     }

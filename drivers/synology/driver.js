@@ -31,6 +31,12 @@ function updatesettings() {
 
 }
 
+module.exports.getDevices = function(callback) {
+
+	return devices;
+	
+}
+
 module.exports.init = function(devices_data, callback) {
 	
 	devices_data.forEach(function initdevice(device) {
@@ -67,7 +73,6 @@ module.exports.deleted = function( device_data ) {
     devices[device_data.id] = [];
 	
 };
-
 	
 module.exports.pair = function (socket) {
 
