@@ -26,6 +26,9 @@ The following cards are available:
 Use at your own risk, I accept no responsibility for any damages caused by using this script.
 
 # Changelog
+**Version 1.2.5**
+- Snapshot now available as token (WORK IN PROGRESS)
+
 **Version 1.2.4**
 - Somehow some node_modules got damaged
 

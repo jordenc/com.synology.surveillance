@@ -4,7 +4,7 @@
         "en": "Synology Surveillance Station",
         "nl": "Synology Surveillance Station"
     },
-    "version": "1.2.4",
+    "version": "1.2.5",
     "compatibility": ">=0.8.29",
     "author": {
         "name": "Chamid Media",
@@ -126,6 +126,33 @@
                 "filter": "driver_id=synology"
               }
 			]
+        },
+        {
+            "id": "snapshot_taken",
+            "title": {
+                "en": "A snapshot was taken",
+                "nl": "Er is een snapshot gemaakt"
+            },
+            "tokens": [
+				{
+					"name": "snapshot",
+					"title": {
+						"en": "snapshot",
+						"nl": "snapshot"
+					}
+				}
+			],
+            "args": [
+              {
+                "name": "device",
+                "type": "device",
+                "placeholder": {
+                  "en": "Select camera",
+                  "nl": "Selecteer camera"
+                },
+                "filter": "driver_id=synology"
+              }
+			]
         }
         ],
         "actions": [
@@ -170,6 +197,24 @@
             "title": {
                 "en": "Take a snapshot",
                 "nl": "Maak een foto"
+            },
+            "args": [
+	              {
+	                "name": "device",
+	                "type": "device",
+	                "placeholder": {
+	                  "en": "Select camera",
+	                  "nl": "Selecteer camera"
+	                },
+	                "filter": "driver_id=synology"
+	              }
+	        ]
+        },
+        {
+            "id": "snapshottoken",
+            "title": {
+                "en": "Take a snapshot as token",
+                "nl": "Maak een foto als token"
             },
             "args": [
 	              {

@@ -590,6 +590,35 @@ Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 	
 });
 
+Homey.manager('flow').on('action.snapshottoken', function (callback, args) {
+
+	Homey.log('take snapshot & use as token - ' + snappath);
+	
+	var options = {
+		api 		: 'SYNO.SurveillanceStation.SnapShot',
+		version		: '1',
+		method		: 'TakeSnapshot',
+		camId		: args.device.id,
+		blSave		: 'false',
+		dsId		: '0',
+		hostname 	: args.device.hostname,
+		username 	: args.device.username,
+		password 	: args.device.password,
+		port 		: args.device.port
+	};
+
+	login(options, function (sid) {
+		options._sid = sid;
+		execute_command (options, snappath, false, false, function (data) {
+			
+			//jorden
+			Homey.manager('flow').triggerDevice('snapshot_taken', {snapshot: data.data.imageData}, {device: device.id});
+			
+		});	
+	});
+	
+});
+
 // CONDITIONS:
 Homey.manager('flow').on('condition.available', function(callback, args){
 	
