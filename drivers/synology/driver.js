@@ -612,7 +612,8 @@ Homey.manager('flow').on('action.snapshottoken', function (callback, args) {
 		execute_command (options, snappath, false, false, function (data) {
 			
 			//jorden
-			Homey.manager('flow').triggerDevice('snapshot_taken', {snapshot: data.data.imageData}, {device: device.id});
+			Homey.manager('flow').triggerDevice('snapshot_taken', {snapshot: data.data.imageData}, {device: args.device.id});
+			callback (null, true);
 			
 		});	
 	});
