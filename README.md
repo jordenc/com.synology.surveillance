@@ -14,6 +14,7 @@ The following cards are available:
 - [ACTION] Stop recording
 - [ACTION] Take snapshot (will go to /USERNAME/@Snapshot/ on your Synology)
 - [ACTION] Mail snapshot (first fill in SMTP settings under 'Settings' in Homey!)
+- [ACTION] Take snapshot as token for use with Homey
 - [ACTION] Enable camera
 - [ACTION] Disable camera
 - [CONDITION] Is the camera recording?
@@ -27,7 +28,7 @@ Use at your own risk, I accept no responsibility for any damages caused by using
 
 # Changelog
 **Version 1.2.5**
-- Snapshot now available as token (WORK IN PROGRESS)
+- Snapshot now available as token. You can use the "Take snapshot as token" card to take a snapshot and save it as a Homey token, which you can then use in combination with other supported Homey apps such as the Telegram app.
 
 **Version 1.2.4**
 - Somehow some node_modules got damaged
