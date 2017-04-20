@@ -51,7 +51,7 @@ module.exports.return_snapshot = function(callback, required_device) {
 					api 		: 'SYNO.SurveillanceStation.SnapShot',
 					version		: '1',
 					method		: 'TakeSnapshot',
-					camId		: device.id,
+					camId		: device.camid,
 					blSave		: 'false',
 					dsId		: '0',
 					hostname 	: device.hostname,
@@ -93,6 +93,13 @@ module.exports.init = function(devices_data, callback) {
 	
 		}
 		
+		//migrate devices from < 1.2.6
+		if (typeof device.camid === "undefined" || device.camid === '') {
+		
+			device.camid = device.id
+			Homey.log('Migrating device added before version 1.2.6: #' + device.id);
+			
+		}
 		//Homey.log('add device: ' + JSON.stringify(device));
 			    
 	    devices[device.id] = device;
@@ -134,9 +141,11 @@ module.exports.pair = function (socket) {
 			
 			Homey.log ('device=' + device.name);
 			
+			
 			devices.push(
 				{
-					id			: device.id,
+					id			: device.host + '_' + device.id,
+					camid		: device.id,
 					ipaddress 	: device.host,
 					model		: device.model,
 					username	: tempdata.username,
@@ -150,7 +159,8 @@ module.exports.pair = function (socket) {
 			new_devices.push(
 				{
 					data: {
-						id			: device.id,
+						id			: device.host + '_' + device_id,
+						camid		: device.id,
 						ipaddress 	: device.host,
 						model		: device.model,
 						username	: tempdata.username,
@@ -225,7 +235,7 @@ Homey.manager('flow').on('action.startRecording', function( callback, args ){
 		api 		: 'SYNO.SurveillanceStation.ExternalRecording',
 		version		: '2',
 		method		: 'Record',
-		cameraId	: args.device.id,
+		cameraId	: args.device.camid,
 		action		: 'start',
 		hostname 	: args.device.hostname,
 		username 	: args.device.username,
@@ -246,7 +256,7 @@ Homey.manager('flow').on('action.stopRecording', function( callback, args ){
 		api 		: 'SYNO.SurveillanceStation.ExternalRecording',
 		version		: '2',
 		method		: 'Record',
-		cameraId	: args.device.id,
+		cameraId	: args.device.camid,
 		action		: 'stop',
 		hostname 	: args.device.hostname,
 		username 	: args.device.username,
@@ -441,7 +451,7 @@ Homey.manager('flow').on('action.snapshot', function (callback, args) {
 		api 		: 'SYNO.SurveillanceStation.SnapShot',
 		version		: '1',
 		method		: 'TakeSnapshot',
-		camId		: args.device.id,
+		camId		: args.device.camid,
 		blSave		: 'true',
 		dsId		: '0',
 		hostname 	: args.device.hostname,
@@ -466,7 +476,7 @@ Homey.manager('flow').on('action.enable', function (callback, args) {
 		api 		: 'SYNO.SurveillanceStation.Camera',
 		version		: '3',
 		method		: 'Enable',
-		cameraIds	: args.device.id,
+		cameraIds	: args.device.camid,
 		hostname 	: args.device.hostname,
 		username 	: args.device.username,
 		password 	: args.device.password,
@@ -493,7 +503,7 @@ Homey.manager('flow').on('action.disable', function (callback, args) {
 		api 		: 'SYNO.SurveillanceStation.Camera',
 		version		: '3',
 		method		: 'Disable',
-		cameraIds	: args.device.id,
+		cameraIds	: args.device.camid,
 		hostname 	: args.device.hostname,
 		username 	: args.device.username,
 		password 	: args.device.password,
@@ -524,7 +534,7 @@ Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 			api 		: 'SYNO.SurveillanceStation.SnapShot',
 			version		: '1',
 			method		: 'TakeSnapshot',
-			camId		: args.device.id,
+			camId		: args.device.camid,
 			blSave		: 'false',
 			dsId		: '0',
 			hostname 	: args.device.hostname,
@@ -556,7 +566,7 @@ Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 					
 					from: 'Homey <' + mail_from + '>',
 				    to: args.mailto,
-				    subject: __("snapshot_from") + ' #' + devices[args.device.id].id,
+				    subject: __("snapshot_from") + ' #' + devices[args.device.cid].camid,
 				    text: '',
 				    html: '',
 			    
@@ -598,7 +608,7 @@ Homey.manager('flow').on('action.snapshottoken', function (callback, args) {
 		api 		: 'SYNO.SurveillanceStation.SnapShot',
 		version		: '1',
 		method		: 'TakeSnapshot',
-		camId		: args.device.id,
+		camId		: args.device.camid,
 		blSave		: 'false',
 		dsId		: '0',
 		hostname 	: args.device.hostname,
@@ -627,7 +637,7 @@ Homey.manager('flow').on('condition.available', function(callback, args){
 		api 		: 'SYNO.SurveillanceStation.Camera',
 		version		: '1',
 		method		: 'GetInfo',
-		cameraIds	: args.device.id,
+		cameraIds	: args.device.camid,
 		hostname 	: args.device.hostname,
 		username 	: args.device.username,
 		password 	: args.device.password,
@@ -652,7 +662,7 @@ Homey.manager('flow').on('condition.recording', function(callback, args){
 		api 		: 'SYNO.SurveillanceStation.Camera',
 		version		: '1',
 		method		: 'GetInfo',
-		cameraIds	: args.device.id,
+		cameraIds	: args.device.camid,
 		hostname 	: args.device.hostname,
 		username 	: args.device.username,
 		password 	: args.device.password,
@@ -683,7 +693,7 @@ function polling(init) {
 			api 		: 'SYNO.SurveillanceStation.Camera',
 			version		: '1',
 			method		: 'GetInfo',
-			cameraIds	: device.id,
+			cameraIds	: device.camid,
 			hostname 	: device.hostname,
 			username 	: device.username,
 			password 	: device.password,

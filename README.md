@@ -27,6 +27,9 @@ The following cards are available:
 Use at your own risk, I accept no responsibility for any damages caused by using this script.
 
 # Changelog
+**Version 1.2.6**
+- Added support for camera's on multiple Synology's in combination with the Telegram app's "/snap" functionality. If you already have multiple Synology's connected, you will have to delete all but one to be able to screenshot via Telegram, then add them again.
+
 **Version 1.2.5**
 - Snapshot now available as token. You can use the "Take snapshot as token" card to take a snapshot and save it as a Homey token, which you can then use in combination with other supported Homey apps such as the Telegram app.
 
