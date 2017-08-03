@@ -27,7 +27,9 @@ function updatesettings() {
 	mail_secure = Homey.manager('settings').get('mail_secure');
 	
 	enablepolling = Homey.manager('settings').get('enablepolling');
-	if (enablepolling) setTimeout(polling (true), 15000);
+	if (enablepolling) setTimeout(function() {
+		polling (true);
+	}, 15000);
 
 }
 
@@ -102,13 +104,15 @@ module.exports.init = function(devices_data, callback) {
 		}
 		//Homey.log('add device: ' + JSON.stringify(device));
 			    
-	    devices[device.id] = device;
+	    devices[device.id] = Object.assign({}, device); 
 	    
 	});
 	
 	
 	enablepolling = Homey.manager('settings').get('enablepolling');
-	if (enablepolling) setTimeout(polling (true), 15000);
+	if (enablepolling) setTimeout(function() {
+		polling (true);
+	}, 15000);
 	Homey.log('enablepolling = ' + enablepolling);
 	
 	callback (null, true);
@@ -683,7 +687,7 @@ Homey.manager('flow').on('condition.recording', function(callback, args){
 
 function polling(init) {
 	
-	if (enablepolling) setTimeout(polling, 15000);
+	if (enablepolling) setTimeout(function() {polling}, 15000);
 				
 	devices.forEach(function initdevice(device) {
 		
