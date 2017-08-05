@@ -163,7 +163,7 @@ module.exports.pair = function (socket) {
 			new_devices.push(
 				{
 					data: {
-						id			: device.host + '_' + device_id,
+						id			: device.host + '_' + device.id,
 						camid		: device.id,
 						ipaddress 	: device.host,
 						model		: device.model,
