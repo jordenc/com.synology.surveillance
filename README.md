@@ -27,6 +27,9 @@ The following cards are available:
 Use at your own risk, I accept no responsibility for any damages caused by using this script.
 
 # Changelog
+**Version 1.2.8**
+- Fixed typo
+
 **Version 1.2.7**
 - Bugfix for crashes on Homey 1.5.x
 - Bugfix for pairing with multiple cameras
