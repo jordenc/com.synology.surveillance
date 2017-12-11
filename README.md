@@ -27,6 +27,10 @@ The following cards are available:
 Use at your own risk, I accept no responsibility for any damages caused by using this script.
 
 # Changelog
+**Version 1.2.9**
+- Fix for snapshot-to-mail function (Thanks evad!)
+- If you still have problems with the functionality of this app, you probably have had this app from before version 1.2.6 which had some big changes. Please remove your Synology webcam from Homey and re-add it. This should solve it.
+
 **Version 1.2.8**
 - Fixed typo
 

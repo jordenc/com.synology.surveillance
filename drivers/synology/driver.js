@@ -63,7 +63,7 @@ module.exports.return_snapshot = function(callback, required_device) {
 				};
 			
 				login(options, function (sid) {
-					options._sid = sid;
+					options.sid = sid;
 					execute_command (options, snappath, false, false, function (data) {
 						
 						callback (null, data.data.imageData);
@@ -98,11 +98,12 @@ module.exports.init = function(devices_data, callback) {
 		//migrate devices from < 1.2.6
 		if (typeof device.camid === "undefined" || device.camid === '') {
 		
-			device.camid = device.id
+			device.camid = device.id;
 			Homey.log('Migrating device added before version 1.2.6: #' + device.id);
 			
 		}
-		//Homey.log('add device: ' + JSON.stringify(device));
+		
+		Homey.log('add device: ' + JSON.stringify(device));
 			    
 	    devices[device.id] = Object.assign({}, device); 
 	    
@@ -204,7 +205,7 @@ module.exports.pair = function (socket) {
 		};
 		
 		login(data, function (sid) {
-			options._sid = sid;
+			options.sid = sid;
 			tempdata = data;
 			
 			execute_command (options, snappath, false, false, function (data) {
@@ -248,7 +249,7 @@ Homey.manager('flow').on('action.startRecording', function( callback, args ){
 	};
 
 	login(options, function (sid) {
-		options._sid = sid;
+		options.sid = sid;
 		execute_command (options, snappath, callback);
 	});
 	
@@ -269,7 +270,7 @@ Homey.manager('flow').on('action.stopRecording', function( callback, args ){
 	};
 
 	login(options, function (sid) {
-		options._sid = sid;
+		options.sid = sid;
 		execute_command (options, snappath, callback);
 	});
 	
@@ -309,9 +310,20 @@ function execute_command (options, path, callback, logincall, outputcallback) {
 			
 			if (key != 'hostname' && key != 'port' && key != 'username' && key != 'password') {
 	
+				Homey.log ('key = ' + key);
+				Homey.log ('val = ' + options[key]);
 				if (query != '?') query = query + '&';
 				//Homey.log('key = ' + key + ', val = ' + options[key]);
-				query = query + key + '=' + options[key].toString();
+				
+				if (key == 'sid') {
+					
+					query = query + '_sid=' + options[key].toString();
+					
+				} else {
+				
+					query = query + key + '=' + options[key].toString();
+				
+				}
 				
 			}
 			
@@ -440,7 +452,7 @@ function logout (credentials) {
 		session		: 'SurveillanceStation',
 		hostname	: credentials.hostname,
 		port		: credentials.port,
-		_sid		: credentials._sid
+		sid			: credentials.sid
 	};
 	
 	execute_command (options, '/webapi/auth.cgi', false, 1);
@@ -465,7 +477,7 @@ Homey.manager('flow').on('action.snapshot', function (callback, args) {
 	};
 
 	login(options, function (sid) {
-		options._sid = sid;
+		options.sid = sid;
 		execute_command (options, snappath, callback);
 		
 		logout(options);
@@ -488,7 +500,7 @@ Homey.manager('flow').on('action.enable', function (callback, args) {
 	};
 
 	login(options, function (sid) {
-		options._sid = sid;
+		options.sid = sid;
 		execute_command (options, snappath, false, false, function (data) {
 			
 			if (data.data.success == true) callback (null, true); else callback (data.error.code, false);
@@ -515,7 +527,7 @@ Homey.manager('flow').on('action.disable', function (callback, args) {
 	};
 
 	login(options, function (sid) {
-		options._sid = sid;
+		options.sid = sid;
 		execute_command (options, snappath, false, false, function (data) {
 			
 			if (data.data.success == true) callback (null, true); else callback (data.error.code, false);
@@ -531,6 +543,7 @@ Homey.manager('flow').on('action.disable', function (callback, args) {
 Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 
 	Homey.log('take snapshot & mail - ' + snappath);
+	//Homey.log('args = ' + JSON.stringify(args));
 	
 	if ( typeof mail_user !== 'undefined' && typeof mail_pass !== 'undefined' && typeof mail_host !== 'undefined' && typeof mail_port !== 'undefined' && typeof mail_from !== 'undefined' && mail_user != '' && mail_pass != '' && mail_host != '' && mail_port != '') {
 	
@@ -548,7 +561,7 @@ Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 		};
 	
 		login(options, function (sid) {
-			options._sid = sid;
+			options.sid = sid;
 			execute_command (options, snappath, false, false, function (data) {
 				
 				var transporter = nodemailer.createTransport(
@@ -570,7 +583,7 @@ Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
 					
 					from: 'Homey <' + mail_from + '>',
 				    to: args.mailto,
-				    subject: __("snapshot_from") + ' #' + devices[args.device.cid].camid,
+				    subject: __("snapshot_from") + ' #',
 				    text: '',
 				    html: '',
 			    
@@ -622,7 +635,7 @@ Homey.manager('flow').on('action.snapshottoken', function (callback, args) {
 	};
 
 	login(options, function (sid) {
-		options._sid = sid;
+		options.sid = sid;
 		execute_command (options, snappath, false, false, function (data) {
 			
 			//jorden
@@ -649,7 +662,7 @@ Homey.manager('flow').on('condition.available', function(callback, args){
 	};
 
 	login(options, function (sid) {
-		options._sid = sid;
+		options.sid = sid;
 		execute_command (options, snappath, false, false, function (data) {
 			
 			if (data.data.cameras[0].camStatus == 1) callback (null, true); else callback (null, false);
@@ -674,7 +687,7 @@ Homey.manager('flow').on('condition.recording', function(callback, args){
 	};
 
 	login(options, function (sid) {
-		options._sid = sid;
+		options.sid = sid;
 		execute_command (options, snappath, false, false, function (data) {
 			
 			if (data.data.cameras[0].recStatus != 0) callback (null, true); else callback (null, false);
@@ -705,7 +718,7 @@ function polling(init) {
 		};
 	
 		login(options, function (sid) {
-			options._sid = sid;
+			options.sid = sid;
 			execute_command (options, snappath, false, false, function (data) {
 				
 				//first initialisation, only save the status, don't trigger
