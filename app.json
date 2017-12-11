@@ -139,6 +139,10 @@
 					"title": {
 						"en": "snapshot",
 						"nl": "snapshot"
+					},
+					"type": "string",
+					"example": {
+						"en": "base64 encoded image"
 					}
 				}
 			],
