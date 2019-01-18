@@ -3,11 +3,18 @@ Control Synology Surveillance Station from Homey (www.athom.com)
 
 **Want to show your appreciation for this app? A donation is possible via http://www.d2c.nl **
 
-To be able to use this app, you need to supply the app with the IP of the Synology NAS, as well as the username and password of an admin. 
+To be able to use this app, you need to supply the app with the IP of the Synology NAS, as well as the username and password of an admin. It's best to set up an admin purely for this purpose, by following these steps from a computer:
 
-1. Make sure to add a user that doesn't require 2 factor authentication. 
-2. Add the user to the 'administrators' group, because of the required permissions.
-3. Under 'applications', allow the user to access the Surveillance Station
+1. Login to your Synology
+2. Click on "Surveillance Station" so it opens in a new window.
+3. Click on the menu button, go to "User".
+4. Click on "Add", fill in a username and password (remember both, you will be neeeing them later)
+5. Click "Next", make sure to choose the profile with "Manager" rights. 
+6. Click "Next", make sure to check all cameras you want to give access to.
+7. Click "Complete".
+
+Also make sure your Synology has a fixed IP in your network.
+
 
 The following cards are available:
 - [ACTION] Start recording
@@ -27,6 +34,11 @@ The following cards are available:
 Use at your own risk, I accept no responsibility for any damages caused by using this script.
 
 # Changelog
+**Version 2.0.0**
+- Homey SDK2 version
+- Snapshot as token will now take a snapshot as a Homey image token (usable in other apps like email-sender, Telegram etc)
+- Snapshot-to-mail function removed (install email-sender app if you want to do this)
+
 **Version 1.2.9**
 - Fix for snapshot-to-mail function (Thanks evad!)
 - If you still have problems with the functionality of this app, you probably have had this app from before version 1.2.6 which had some big changes. Please remove your Synology webcam from Homey and re-add it. This should solve it.

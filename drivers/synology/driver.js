@@ -1,766 +1,320 @@
 "use strict";
 
+const Homey = require('homey');
 var http = require('http');
-var nodemailer = require('nodemailer');
-var tempdevices, tempdata;
-var devices = [];
-var recordpath, snappath;
+var tempdevices;
+var snappath;
 var sid;
-var mail_user, mail_pass, mail_host, mail_port, mail_from, mail_secure;
-var enablepolling;
 
-Homey.manager('settings').on('set', function (name) {
-
-	Homey.log('variable ' + name + ' has been set');
-	updatesettings();
+module.exports = class SynologyDriver extends Homey.Driver {
 	
-});
-
-function updatesettings() {
+	onInit() {
 	
-	//mail settings (if any)
-	mail_user = Homey.manager('settings').get('mail_user');
-	mail_pass = Homey.manager('settings').get('mail_password');
-	mail_host = Homey.manager('settings').get('mail_host');
-	mail_port = Homey.manager('settings').get('mail_port');
-	mail_from = Homey.manager('settings').get('mail_from');
-	mail_secure = Homey.manager('settings').get('mail_secure');
-	
-	enablepolling = Homey.manager('settings').get('enablepolling');
-	if (enablepolling) setTimeout(function() {
-		polling (true);
-	}, 15000);
-
-}
-
-//returns the devices to api.js / external devices
-module.exports.getDevices = function() {
-
-	return devices;
-	
-}
-
-//Returns the data of a taken snapshot (to api.js / external apps)
-module.exports.return_snapshot = function(callback, required_device) {
-	
-	devices.forEach(function snapshot(device) {
-						
-		if (device != null) {
-									
-			if (device.id == required_device) {
-	
-				var options = {
-					api 		: 'SYNO.SurveillanceStation.SnapShot',
-					version		: '1',
-					method		: 'TakeSnapshot',
-					camId		: device.camid,
-					blSave		: 'false',
-					dsId		: '0',
-					hostname 	: device.hostname,
-					username 	: device.username,
-					password 	: device.password,
-					port 		: device.port
-				};
-			
-				login(options, function (sid) {
-					options.sid = sid;
-					execute_command (options, snappath, false, false, function (data) {
-						
-						callback (null, data.data.imageData);
-						
-					});	
-				});
-				
-			}
-			
-		}
+		this.log("Driver init...");
 		
-	});
-
-}
-
-
-
-module.exports.init = function(devices_data, callback) {
-	
-	devices_data.forEach(function initdevice(device) {
-	   
-	    //migrate from older versions (< 1.1.0):
-		if (typeof device.username === "undefined" || device.username === '') {
-			
-			device.hostname = Homey.manager('settings').get('hostname');
-			device.username = Homey.manager('settings').get('username');
-			device.password = Homey.manager('settings').get('password');
-			device.port	 = Homey.manager('settings').get('port');
-	
-		}
+		snappath = '/webapi/entry.cgi';
 		
-		//migrate devices from < 1.2.6
-		if (typeof device.camid === "undefined" || device.camid === '') {
-		
-			device.camid = device.id;
-			Homey.log('Migrating device added before version 1.2.6: #' + device.id);
-			
-		}
-		
-		Homey.log('add device: ' + JSON.stringify(device));
-			    
-	    devices[device.id] = Object.assign({}, device); 
-	    
-	});
-	
-	
-	enablepolling = Homey.manager('settings').get('enablepolling');
-	if (enablepolling) setTimeout(function() {
-		polling (true);
-	}, 15000);
-	Homey.log('enablepolling = ' + enablepolling);
-	
-	callback (null, true);
-	
-};
-
-module.exports.deleted = function( device_data ) {
-    
-    Homey.log('deleted: ' + JSON.stringify(device_data));
-    
-    devices[device_data.id] = [];
-	
-};
-	
-module.exports.pair = function (socket) {
-
-	// socket is a direct channel to the front-end
-
-	// this method is run when Homey.emit('list_devices') is run on the front-end
-	// which happens when you use the template `list_devices`
-	socket.on('list_devices', function (data, callback) {
-
-		Homey.log("Synology Surveillance Station app - list_devices called" );
-		
-		var new_devices = [];
-		
-		for (var key in tempdevices) {
-			
-			var device = tempdevices[key];
-			
-			Homey.log ('device=' + device.name);
-			
-			
-			devices.push(
-				{
-					id			: device.host + '_' + device.id,
-					camid		: device.id,
-					ipaddress 	: device.host,
-					model		: device.model,
-					username	: tempdata.username,
-					password	: tempdata.password,
-					hostname	: tempdata.hostname,
-					port		: tempdata.port,
-					name		: device.name
-				}
-			);
-			
-			new_devices.push(
-				{
-					data: {
-						id			: device.host + '_' + device.id,
-						camid		: device.id,
-						ipaddress 	: device.host,
-						model		: device.model,
-						username	: tempdata.username,
-						password	: tempdata.password,
-						hostname	: tempdata.hostname,
-						port		: tempdata.port
-						
-					},
-					name: device.name
-				}
-			);
-			
-		};
-
-
-		Homey.log ('callback with ' + JSON.stringify(new_devices));
-		callback (null, new_devices);
-
-	});
-
-	// this is called when the user presses save settings button in start.html
-	socket.on('get_devices', function (data, callback) {
-		
-		Homey.log ( "Synology Surveillance Station app - got get_devices from front-end, hostname =" + data.hostname );
-		
-		var options = {
-			
-			api 		: 'SYNO.SurveillanceStation.Camera',
-			version	: '1',
-			method	: 'List',
-			query	: 'ALL',
-			hostname : data.hostname,
-			username : data.username,
-			password : data.password,
-			port : data.port
-			
-		};
-		
-		login(data, function (sid) {
-			options.sid = sid;
-			tempdata = data;
-			
-			execute_command (options, snappath, false, false, function (data) {
-				
-				Homey.log('data.data.camera = ' + JSON.stringify(data.data.cameras));
-				
-				tempdevices = data.data.cameras;
-				
-				socket.emit ('continue', null);
-				
-			});	
-			
-		});
-		
-		
-	});
-
-	socket.on('disconnect', function(){
-		Homey.log("Synology Surveillance Station - User aborted pairing, or pairing is finished");
-	});
-}
-
-updatesettings();
-
-snappath = '/webapi/entry.cgi';
-
-
-// flow action handlers
-Homey.manager('flow').on('action.startRecording', function( callback, args ){
-	
-	var options = {
-		api 		: 'SYNO.SurveillanceStation.ExternalRecording',
-		version		: '2',
-		method		: 'Record',
-		cameraId	: args.device.camid,
-		action		: 'start',
-		hostname 	: args.device.hostname,
-		username 	: args.device.username,
-		password 	: args.device.password,
-		port 		: args.device.port
-	};
-
-	login(options, function (sid) {
-		options.sid = sid;
-		execute_command (options, snappath, callback);
-	});
-	
-});
-
-Homey.manager('flow').on('action.stopRecording', function( callback, args ){
-	
-	var options = {
-		api 		: 'SYNO.SurveillanceStation.ExternalRecording',
-		version		: '2',
-		method		: 'Record',
-		cameraId	: args.device.camid,
-		action		: 'stop',
-		hostname 	: args.device.hostname,
-		username 	: args.device.username,
-		password 	: args.device.password,
-		port 		: args.device.port
-	};
-
-	login(options, function (sid) {
-		options.sid = sid;
-		execute_command (options, snappath, callback);
-	});
-	
-});
-
-function login(credentials, cmdcallback) {
-	
-	var options = {
-		api 		: 'SYNO.API.Auth',
-		version		: '2',
-		method		: 'Login',
-		account		: credentials.username,
-		passwd		: credentials.password,
-		session		: 'SurveillanceStation',
-		format		: 'sid',
-		session		: 'NodeSynologyAPI' + Math.round(Math.random() * 1e9),	
-		hostname	: credentials.hostname,
-		port		: credentials.port
-	};
-	
-	execute_command (options, '/webapi/auth.cgi', false, function(sid) {
-		
-		cmdcallback(sid);
-		
-	});
-	
-}
-
-function execute_command (options, path, callback, logincall, outputcallback) {
-	
-	Homey.log('[CMD] ' + options.method + ' called');
-	
-	var query = '?';
-	
-	try {
-		for (var key in options) {
-			
-			if (key != 'hostname' && key != 'port' && key != 'username' && key != 'password') {
-	
-				Homey.log ('key = ' + key);
-				Homey.log ('val = ' + options[key]);
-				if (query != '?') query = query + '&';
-				//Homey.log('key = ' + key + ', val = ' + options[key]);
-				
-				if (key == 'sid') {
-					
-					query = query + '_sid=' + options[key].toString();
-					
-				} else {
-				
-					query = query + key + '=' + options[key].toString();
-				
-				}
-				
-			}
-			
-	    }
-	} catch (e) {
-		
-		Homey.log('[CMD] ' + options.method + ' ERROR: ' + e);
+		this._Triggerrecording_starts = new Homey.FlowCardTriggerDevice('recording_starts')
+            .register()
+		this._Triggerrecording_stops = new Homey.FlowCardTriggerDevice('recording_stops')
+            .register()
+		this._Triggercam_available = new Homey.FlowCardTriggerDevice('cam_available')
+            .register()
+		this._Triggercam_unavailable = new Homey.FlowCardTriggerDevice('cam_unavailable')
+            .register()
+		this._Triggersnapshot_taken = new Homey.FlowCardTriggerDevice('snapshot_taken')
+            .register()
 		
 	}
 	
-	//Homey.log('query = ' + path + JSON.stringify(query));
-	
-	if (options.hostname && options.port) {
-	
-		try {
-			http.get({
-		        host: options.hostname,
-		        port: options.port,
-		        path: path + query
-		    }, function(response) {
-		        // Continuously update stream with data
-		        var body = '';
-		        response.on('data', function(d) {
-		            body += d;
-		        });
-		        response.on('end', function() {
-			        
-			        Homey.log('RESPONSE END ' + JSON.stringify (body));
-			        
-			        if (!logincall) logout (options);
-			        
-			        if (outputcallback) {
-				        
-				        try {
-							var parsed = JSON.parse(body);
-							
-							if (parsed.success == true) {
-				
-								outputcallback (parsed);
-																			
-							} else {
-								
-								//callback (null, false);
-								
-							}
-							
-						} catch (e) {
-							
-							Homey.log('error: ' + e);
-						}
-				        
-			        }
+	triggerrecording_starts( device, tokens, state ) {
+        this._Triggerrecording_starts
+            .trigger( device, tokens, state )
+                .then( this.log )
+                .catch( this.error )
+    }
+    
+	triggerrecording_stops( device, tokens, state ) {
+        this._Triggerrecording_stops
+            .trigger( device, tokens, state )
+                .then( this.log )
+                .catch( this.error )
+    }
+    
+    triggercam_available( device, tokens, state ) {
+        this._Triggercam_available
+            .trigger( device, tokens, state )
+                .then( this.log )
+                .catch( this.error )
+    }
+    
+    triggercam_unavailable( device, tokens, state ) {
+        this._Triggercam_unavailable
+            .trigger( device, tokens, state )
+                .then( this.log )
+                .catch( this.error )
+    }
+    
+    triggersnapshot_taken( device, tokens, state ) {
+        this._Triggersnapshot_taken
+            .trigger( device, tokens, state )
+                .then( this.log ("snapshot triggered") )
+                .catch( this.error ("snapshot trigger error") )
+    }
+    
+    onPair (socket) {
+	    
+	    console.log("Synology Surveillance Station app - onPair called" );
+	    
+	    function login(credentials, cmdcallback) {
 		
-					if (callback) {
-						
-						try {
-							var parsed = JSON.parse(body);
-							
-							if (parsed.success == true) {
+			var options = {
+				api 		: 'SYNO.API.Auth',
+				version		: 6,
+				method		: 'Login',
+				account		: credentials.username,
+				passwd		: credentials.password,
+				session		: 'SurveillanceStation',
+				format		: 'sid',
+				hostname	: credentials.hostname,
+				port		: credentials.port
+			};
+			
+			execute_command (options, '/webapi/auth.cgi', false, function(sid) {
 				
-								callback (null, true);
-												
-							} else {
-								
-								callback (null, false);
-								
-							}
-							
-							//Homey.log('[BODY] ' + body);
-						} catch (e) {
-							
-							callback (e, false);
-							
-						}
-						
-					} else {
-						
-						try {
-							var parsed = JSON.parse(body);
-							
-							//Homey.log('parsed='+JSON.stringify(parsed));
-							if (typeof logincall === "function") logincall(parsed.data.sid);	
-		
-						} catch (e) {
-							
-							if (typeof logincall === "function") logincall(false);
-							
-						}
-						
-					}
-					
-		        });
-		        response.on('error', function (e) {
-			        
-			        Homey.log('RESPONSE ERROR: ' + e);
-			        callback (e, false);
-					
-		        });
-		    })
-		    .on('error', function (e) {
-			    
-			    Homey.log('HTTP.GET ERROR: ' + e);
-			    if (typeof callback == 'function') callback (e, false);
-			        
+				cmdcallback(sid);
+				
 			});
-		} catch (e) {
-			
-			Homey.log('[ERROR HTTP.GET] ' + e);
 			
 		}
 		
-	} else {
-		
-		Homey.log ('No hostname or port set: ' + options.hostname + ':' + options.port);
-		
-	}
-
-}
-
-function logout (credentials) {
-	
-	var options = {
-		api			: 'SYNO.API.Auth',
-		version		: '2',
-		method		: 'Logout',
-		session		: 'SurveillanceStation',
-		hostname	: credentials.hostname,
-		port		: credentials.port,
-		sid			: credentials.sid
-	};
-	
-	execute_command (options, '/webapi/auth.cgi', false, 1);
-	
-}
-
-Homey.manager('flow').on('action.snapshot', function (callback, args) {
-	
-	Homey.log('args = ' + JSON.stringify(args));
-	
-	var options = {
-		api 		: 'SYNO.SurveillanceStation.SnapShot',
-		version		: '1',
-		method		: 'TakeSnapshot',
-		camId		: args.device.camid,
-		blSave		: 'true',
-		dsId		: '0',
-		hostname 	: args.device.hostname,
-		username 	: args.device.username,
-		password 	: args.device.password,
-		port 		: args.device.port
-	};
-
-	login(options, function (sid) {
-		options.sid = sid;
-		execute_command (options, snappath, callback);
-		
-		logout(options);
-	
-	});
-	
-});
-
-Homey.manager('flow').on('action.enable', function (callback, args) {
-	
-	var options = {
-		api 		: 'SYNO.SurveillanceStation.Camera',
-		version		: '3',
-		method		: 'Enable',
-		cameraIds	: args.device.camid,
-		hostname 	: args.device.hostname,
-		username 	: args.device.username,
-		password 	: args.device.password,
-		port 		: args.device.port
-	};
-
-	login(options, function (sid) {
-		options.sid = sid;
-		execute_command (options, snappath, false, false, function (data) {
+		function execute_command (options, path, callback, logincall, outputcallback) {
 			
-			if (data.data.success == true) callback (null, true); else callback (data.error.code, false);
+			console.log('[CMD] ' + options.method + ' called');
 			
-			logout(options);
+			var query = '?';
 			
-		});
-	
-	});
-	
-});
-
-Homey.manager('flow').on('action.disable', function (callback, args) {
-	
-	var options = {
-		api 		: 'SYNO.SurveillanceStation.Camera',
-		version		: '3',
-		method		: 'Disable',
-		cameraIds	: args.device.camid,
-		hostname 	: args.device.hostname,
-		username 	: args.device.username,
-		password 	: args.device.password,
-		port 		: args.device.port
-	};
-
-	login(options, function (sid) {
-		options.sid = sid;
-		execute_command (options, snappath, false, false, function (data) {
-			
-			if (data.data.success == true) callback (null, true); else callback (data.error.code, false);
-			
-			logout(options);
-			
-		});
-	
-	});
-	
-});
-
-Homey.manager('flow').on('action.snapshotmail', function (callback, args) {
-
-	Homey.log('take snapshot & mail - ' + snappath);
-	//Homey.log('args = ' + JSON.stringify(args));
-	
-	if ( typeof mail_user !== 'undefined' && typeof mail_pass !== 'undefined' && typeof mail_host !== 'undefined' && typeof mail_port !== 'undefined' && typeof mail_from !== 'undefined' && mail_user != '' && mail_pass != '' && mail_host != '' && mail_port != '') {
-	
-		var options = {
-			api 		: 'SYNO.SurveillanceStation.SnapShot',
-			version		: '1',
-			method		: 'TakeSnapshot',
-			camId		: args.device.camid,
-			blSave		: 'false',
-			dsId		: '0',
-			hostname 	: args.device.hostname,
-			username 	: args.device.username,
-			password 	: args.device.password,
-			port 		: args.device.port
-		};
-	
-		login(options, function (sid) {
-			options.sid = sid;
-			execute_command (options, snappath, false, false, function (data) {
-				
-				var transporter = nodemailer.createTransport(
-				{
-					host: mail_host,
-					port: mail_port,
-					secure: mail_secure,
-					auth: {
-						user: mail_user,
-						pass: mail_pass
-					},
-					tls: {rejectUnauthorized: false} 
-				});
-				
-				Homey.log('devices=' + JSON.stringify (devices));
-				Homey.log('args=' + JSON.stringify (args));
-			    
-			    var mailOptions = {
+			try {
+				for (var key in options) {
 					
-					from: 'Homey <' + mail_from + '>',
-				    to: args.mailto,
-				    subject: __("snapshot_from") + ' #',
-				    text: '',
-				    html: '',
-			    
-				    attachments: [
-				        {   
-					        filename: data.data.fileName,
-				            content: new Buffer(data.data.imageData, 'base64')
-				        }
-			        ]
+					if (key != 'hostname' && key != 'port' && key != 'username' && key != 'password') {
+			
+						//console.log ('key = ' + key);
+						//console.log ('val = ' + options[key]);
+						if (query != '?') query = query + '&';
+						console.log('key = ' + key + ', val = ' + options[key]);
+						
+						if (key == 'sid') {
+							
+							query = query + '_sid=' + options[key].toString();
+							//query = query + '&sid=' + options[key].toString();
+							
+						} else {
+						
+							query = query + key + '=' + options[key].toString();
+						
+						}
+						
+					}
+					
 			    }
-			    
-			    transporter.sendMail(mailOptions, function(error, info){
-				    if(error){
-					    callback (null, false);
-				        return Homey.log(error);
-				    }
-				    Homey.log('Message sent: ' + info.response);
-				    callback (null, true);
-				});
+			} catch (e) {
 				
-			});	
-		});
-			
-	} else {
-		
-		Homey.log(__("not_all_vars_set"));
-	    
-		callback (__("not_all_vars_set"), false);
-		
-	}
-	
-});
-
-Homey.manager('flow').on('action.snapshottoken', function (callback, args) {
-
-	Homey.log('take snapshot & use as token - ' + snappath);
-	
-	var options = {
-		api 		: 'SYNO.SurveillanceStation.SnapShot',
-		version		: '1',
-		method		: 'TakeSnapshot',
-		camId		: args.device.camid,
-		blSave		: 'false',
-		dsId		: '0',
-		hostname 	: args.device.hostname,
-		username 	: args.device.username,
-		password 	: args.device.password,
-		port 		: args.device.port
-	};
-
-	login(options, function (sid) {
-		options.sid = sid;
-		execute_command (options, snappath, false, false, function (data) {
-			
-			//jorden
-			Homey.manager('flow').triggerDevice('snapshot_taken', {snapshot: data.data.imageData}, {device: args.device.id});
-			callback (null, true);
-			
-		});	
-	});
-	
-});
-
-// CONDITIONS:
-Homey.manager('flow').on('condition.available', function(callback, args){
-	
-	var options = {
-		api 		: 'SYNO.SurveillanceStation.Camera',
-		version		: '1',
-		method		: 'GetInfo',
-		cameraIds	: args.device.camid,
-		hostname 	: args.device.hostname,
-		username 	: args.device.username,
-		password 	: args.device.password,
-		port 		: args.device.port
-	};
-
-	login(options, function (sid) {
-		options.sid = sid;
-		execute_command (options, snappath, false, false, function (data) {
-			
-			if (data.data.cameras[0].camStatus == 1) callback (null, true); else callback (null, false);
-			
-		});	
-	});
-	
-});
-
-
-Homey.manager('flow').on('condition.recording', function(callback, args){
-	
-	var options = {
-		api 		: 'SYNO.SurveillanceStation.Camera',
-		version		: '1',
-		method		: 'GetInfo',
-		cameraIds	: args.device.camid,
-		hostname 	: args.device.hostname,
-		username 	: args.device.username,
-		password 	: args.device.password,
-		port 		: args.device.port
-	};
-
-	login(options, function (sid) {
-		options.sid = sid;
-		execute_command (options, snappath, false, false, function (data) {
-			
-			if (data.data.cameras[0].recStatus != 0) callback (null, true); else callback (null, false);
-			
-		});	
-	});
-	
-});
-//
-
-function polling(init) {
-	
-	if (enablepolling) setTimeout(function() {polling}, 15000);
+				console.log('[CMD] ' + options.method + ' ERROR: ' + e);
 				
-	devices.forEach(function initdevice(device) {
-		
-		Homey.log ('checking device ' + JSON.stringify (device));
-		
-		var options = {
-			api 		: 'SYNO.SurveillanceStation.Camera',
-			version		: '1',
-			method		: 'GetInfo',
-			cameraIds	: device.camid,
-			hostname 	: device.hostname,
-			username 	: device.username,
-			password 	: device.password,
-			port 		: device.port
-		};
-	
-		login(options, function (sid) {
-			options.sid = sid;
-			execute_command (options, snappath, false, false, function (data) {
+			}
+			
+			
+			if (options.hostname && options.port) {
+			
+				try {
+					http.get({
+				        host: options.hostname,
+				        port: options.port,
+				        path: path + query
+				    }, function(response) {
+				        // Continuously update stream with data
+				        var body = '';
+				        response.on('data', function(d) {
+				            body += d;
+				        });
+				        response.on('end', function() {
+					        
+					        console.log("query = " + path + query);
+					        console.log('RESPONSE END ' + JSON.stringify (body));
+					        
+					        //if (!logincall) logout (options);
+					        
+					        if (outputcallback) {
+						        
+						        try {
+									var parsed = JSON.parse(body);
+									
+									if (parsed.success == true) {
+						
+										console.log ("parsed outputcallback true");
+										outputcallback (parsed, true);
+										//Promise.resolve(true);
+																					
+									} else {
+										
+										console.log ("parsed outputcallback false");
+										callback (null, false);
+										//Promise.resolve(false);
+										
+									}
+									
+								} catch (e) {
+									
+									console.log('error: ' + e);
+								}
+						        
+					        }
 				
-				//first initialisation, only save the status, don't trigger
-				if (init) {
+							if (callback) {
+								
+								try {
+									var parsed = JSON.parse(body);
+									
+									if (parsed.success == true) {
+						
+										console.log('callback true');
+										callback (null, true);
+														
+									} else {
+										
+										console.log('callback false');
+										callback (null, false);
+										
+									}
+									
+									//console.log('[BODY] ' + body);
+								} catch (e) {
+									
+									callback (e, false);
+									
+								}
+								
+							} else {
+								
+								try {
+									var parsed = JSON.parse(body);
+									
+									//console.log('parsed='+JSON.stringify(parsed));
+									if (typeof logincall === "function") logincall(parsed.data.sid);	
+				
+								} catch (e) {
+									
+									if (typeof logincall === "function") logincall(false);
+									
+								}
+								
+							}
+							
+				        });
+				        response.on('error', function (e) {
+					        
+					        console.log('RESPONSE ERROR: ' + e);
+					        callback (e, false);
+							
+				        });
+				    })
+				    .on('error', function (e) {
+					    
+					    console.log('HTTP.GET ERROR: ' + e);
+					    if (typeof callback == 'function') callback (e, false);
+					        
+					});
+				} catch (e) {
 					
-					devices[device.id].recStatus = data.data.cameras[0].recStatus
-					devices[device.id].camStatus = data.data.cameras[0].camStatus;
-					
-				} else {
-					
-					if (data.data.cameras[0].recStatus != device.recStatus) {
-						
-						devices[device.id].recStatus = data.data.cameras[0].recStatus;
-						
-						Homey.log('recording status: ' + data.data.cameras[0].recStatus);
-						
-						if (devices[device.id].recStatus != 0) {
-							Homey.manager('flow').triggerDevice('recording_starts', {}, {device: device.id});
-						} else {
-							Homey.manager('flow').triggerDevice('recording_stops', {}, {device: device.id});
-						}
-					}
-					
-					if (data.data.cameras[0].camStatus != device.camStatus) {
-						
-						devices[device.id].camStatus = data.data.cameras[0].camStatus;
-
-						Homey.log('cam status: ' + data.data.cameras[0].camStatus);
-						
-						if (devices[device.id].camStatus == 1) {
-							Homey.manager('flow').triggerDevice('cam_available', {}, {device: device.id});
-						} else {
-							Homey.manager('flow').triggerDevice('cam_unavailable', {}, {device: device.id});
-						}
-						
-					}
+					console.log('[ERROR HTTP.GET] ' + e);
 					
 				}
 				
-			});	
+			} else {
+				
+				console.log ('No hostname or port set: ' + options.hostname + ':' + options.port);
+				
+			}
+		
+		}
+		
+	    // this is called when the user presses save settings button in start.html
+		socket.on('get_devices', function (data, callback) {
+			
+			console.log ( "Synology Surveillance Station app - got get_devices from front-end, hostname =" + data.hostname );
+			
+			var options = {
+				
+				api 		: 'SYNO.SurveillanceStation.Camera',
+				version	: '1',
+				method	: 'List',
+				query	: 'ALL',
+				hostname : data.hostname,
+				username : data.username,
+				password : data.password,
+				port : data.port
+				
+			};
+			
+			login(options, function (sid) {
+				options.sid = sid;
+				//tempdata = data;
+				
+				execute_command (options, snappath, false, false, function (data) {
+					
+					console.log('data.data.camera = ' + JSON.stringify(data.data.cameras));
+					
+					tempdevices = data.data.cameras;
+					
+					socket.emit ('continue', null);
+					
+				});	
+				
+			});
+			
+			
 		});
 		
-	});
-
+    
+    
+		socket.on('list_devices', function( data, callback ) {
+		
+			console.log("Synology Surveillance Station app - list_devices called" );
+			
+			var new_devices = [];
+			
+			for (var key in tempdevices) {
+				
+				var device = tempdevices[key];
+				
+				console.log ('device=' + device.name);
+				
+				new_devices.push(
+					{
+						data: {
+							id			: device.host + '_' + device.id,
+							camid		: device.id,
+							ipaddress 	: device.host,
+							model		: device.model,
+							username	: data.username,
+							password	: data.password,
+							hostname	: data.hostname,
+							port		: data.port
+							
+						},
+						name: device.name
+					}
+				);
+				
+			};
+	
+	
+			console.log ('callback with ' + JSON.stringify(new_devices));
+			callback (null, new_devices);
+			
+		});
+	
+	}
+		
 }

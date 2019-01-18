@@ -20,6 +20,7 @@ Homey.on('continue', function( success, callback ){
 
 function saveSettings () {
 
+	document.getElementById('testresult').innerHTML = "Saved!";
 	// variables
 	var inputhostname = document.getElementById( 'hostname' ).value;
 	var inputusername = document.getElementById( 'username' ).value;
@@ -84,6 +85,8 @@ function saveSettings () {
 		<p>
 		&nbsp;
 	  </p>
+	  
+	  <div id="testresult"></div>
 	  
 	   <p data-i18n="pair.start.note">Please make sure to provide a username that does not require 2 factor authentication!</p>
 	   

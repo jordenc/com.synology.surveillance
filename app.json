@@ -4,8 +4,9 @@
         "en": "Synology Surveillance Station",
         "nl": "Synology Surveillance Station"
     },
-    "version": "1.2.9",
-    "compatibility": ">=0.8.29",
+    "version": "2.0.0",
+    "sdk": 2,
+    "compatibility": ">=1.5",
     "author": {
         "name": "Chamid Media",
         "email": "info@chamidmedia.nl"
@@ -14,6 +15,14 @@
       "large": "./assets/images/large.jpg",
       "small": "./assets/images/small.jpg"
     },
+    "contributing": {
+	    "donate": {
+	        "paypal": {
+	            "email": "info@chamidmedia.nl",
+	            "currency": "EUR"
+	        }
+	    }
+	},
     "category": "appliances",
     "description": {
     	"en": "Control Synology Surveillance Station",
@@ -58,7 +67,7 @@
         {
             "id": "recording_starts",
             "title": {
-                "en": "Start recording",
+                "en": "Recording starts",
                 "nl": "Opname start"
             },
             "args": [
@@ -76,7 +85,7 @@
         {
             "id": "recording_stops",
             "title": {
-                "en": "Stops recording",
+                "en": "Recording stops",
                 "nl": "Opname stopt"
             },
             "args": [
@@ -140,10 +149,7 @@
 						"en": "snapshot",
 						"nl": "snapshot"
 					},
-					"type": "string",
-					"example": {
-						"en": "base64 encoded image"
-					}
+					"type": "image"
 				}
 			],
             "args": [
@@ -199,8 +205,8 @@
         {
             "id": "snapshot",
             "title": {
-                "en": "Take a snapshot",
-                "nl": "Maak een foto"
+                "en": "Take a snapshot (save to Synology)",
+                "nl": "Maak een foto (Opslaan op Synology)"
             },
             "args": [
 	              {
@@ -221,32 +227,6 @@
                 "nl": "Maak een foto als token"
             },
             "args": [
-	              {
-	                "name": "device",
-	                "type": "device",
-	                "placeholder": {
-	                  "en": "Select camera",
-	                  "nl": "Selecteer camera"
-	                },
-	                "filter": "driver_id=synology"
-	              }
-	        ]
-        },
-        {
-            "id": "snapshotmail",
-            "title": {
-                "en": "Mail a snapshot",
-                "nl": "E-mail een foto"
-            },
-            "args": [
-	              {
-		              "name": "mailto",
-		              "type": "text",
-		              "placeholder": {
-			              "en": "Mail to",
-			              "nl": "Mail aan"
-		              }
-	              },
 	              {
 	                "name": "device",
 	                "type": "device",

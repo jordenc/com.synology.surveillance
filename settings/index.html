@@ -12,44 +12,14 @@
 			}
 		</style>
 		
+		<script type="text/javascript" src="/homey.js" data-origin="settings"></script>
+		
     </head>
     <body>
 
         <h1>Synology Surveillance Station</h1>
         <p data-i18n="settings.intro">On this page you can manage settings that apply to all your Synology Surveillance Station devices.</p>
-        
-        <p data-i18n="settings.gmailexplanation">If you wish to send through Gmail SMTP servers, you first need to allow less secure apps on Gmail via <a href='https://www.google.com/settings/security/lesssecureapps' target='_blank'>https://www.google.com/settings/security/lesssecureapps</a></p>
-       
-        <fieldset>
-            <legend data-i18n="settings.mailsettings">Mail settings</legend>
 
-            <div class="field row">
-                <label for="username" data-i18n="settings.username">Mail username</label>
-                <input id="username" type="text" value="" />
-            </div>
-            <div class="field row">
-                <label for="password" data-i18n="settings.password">Mail password</label>
-                <input id="password" type="password" value="" />
-            </div>
-            <div class="field row">
-                <label for="hostname" data-i18n="settings.hostname">SMTP server</label>
-                <input id="hostname" type="text" value="" placeholder="mail.yourdomain.com" />
-            </div>
-            <div class="field row">
-                <label for="port" data-i18n="settings.port">SMTP port</label>
-                <input id="port" type="text" value="" placeholder="25"/>
-            </div>
-            <div class="field row">
-                <label for="sender" data-i18n="settings.sender">Sender address</label>
-                <input id="sender" type="text" value="" placeholder="you@yourdomain.com"/>
-            </div>
-            <div class="field row">
-                <label for="secure" data-i18n="settings.encrypted_connection">Encrypted connection</label>
-                <input id="secure" type="checkbox" value=""/>
-            </div>
-
-        </fieldset>
-        
         <fieldset>
 	        <legend data-i18n="settings.polling">Polling</legend>
         
@@ -58,100 +28,27 @@
         </fieldset>
         <div id="testresult"></div>
 
-        <button class="right" id="savebutton" onclick="save()" data-i18n="pair.start.saveSettings">Save changes</button>
-        <button class="right" id="testbutton" onclick="test()" data-i18n="settings.testmailSettings">Test settings</button>
+        <button id="savebutton" onclick="save()" data-i18n="pair.start.saveSettings">Save changes</button>
 
         <script type="text/javascript">
-        function onHomeyReady(){
-	        Homey.get('mail_user', function(err, username){
-		       if( err ) return console.error('Could not get username', err);
-		       document.getElementById('username').value = username; 
-		    });
-		    
-		    Homey.get('mail_password', function(err, password){
-		       if( err ) return console.error('Could not get mail_password', err);
-		       document.getElementById('password').value = password; 
-		    });
-		    
-		    Homey.get('mail_host', function(err, mail_host){
-		       if( err ) return console.error('Could not get mail_host', err);
-		       document.getElementById('hostname').value = mail_host; 
-		    });
-		    
-		    Homey.get('mail_port', function(err, mail_port){
-		       if( err ) return console.error('Could not get mail_port', err);
-		       document.getElementById('port').value = mail_port; 
-		    });
-		    
-		    Homey.get('mail_from', function(err, mail_sender){
-		       if( err ) return console.error('Could not get mail_sender', err);
-		       document.getElementById('sender').value = mail_sender; 
-		    });
-		   	
-		   	Homey.get('enablepolling', function(err, enablepolling){
+        function onHomeyReady(Homey){
+	        Homey.get('enablepolling', function(err, enablepolling){
 		       if( err ) return console.error('Could not get enablepolling', err);
 		       document.getElementById('enablepolling').checked = enablepolling; 
 		    });
 		    
-		    Homey.get('mail_secure', function(err, mail_secure){
-		       if( err ) return console.error('Could not get mail_secure', err);
-		       document.getElementById('secure').checked = mail_secure; 
-		    });
-		     
             Homey.ready();
         }
 
         function save() {
 	        
-			var savebutton = document.getElementById('savebutton');
-			
-			savebutton.disabled = true;
+			document.getElementById('testresult').innerHTML = "Saving settings...";
 
-            Homey.set('mail_user', document.getElementById('username').value);
-            Homey.set('mail_password', document.getElementById('password').value);
-            Homey.set('mail_host', document.getElementById('hostname').value);
-            Homey.set('mail_port', document.getElementById('port').value);
-            Homey.set('mail_from', document.getElementById('sender').value);
             Homey.set('enablepolling', document.getElementById('enablepolling').checked);
-            Homey.set('mail_secure', document.getElementById('secure').checked);
             
             console.log ("saved the settings!");
             
-            setTimeout(function() {
-                    savebutton.disabled = false;
-                }, 3500);
-                
-        }
-        
-         function test() {
-	        
-	        document.getElementById('testresult').innerHTML = "Testing...";
-	        
-			var testbutton = document.getElementById('testbutton');
-			
-			testbutton.disabled = true;
-
-            console.log ("Testing the settings .. ");
-            
-            Homey.api( 'PUT', '/settings/', {
-			    "mail_user": document.getElementById('username').value,
-			    "mail_password": document.getElementById('password').value,
-			    "mail_host": document.getElementById('hostname').value,
-			    "mail_port": document.getElementById('port').value,
-			    "mail_from": document.getElementById('sender').value,
-			    "mail_secure": document.getElementById('secure').checked
-			}, function( msg, result ){
-			    
-			    document.getElementById('testresult').innerHTML = msg;
-				
-			});
-			
-			//testmail();
-
-            
-            setTimeout(function() {
-                    testbutton.disabled = false;
-                }, 3500);
+            document.getElementById('testresult').innerHTML = "Saved!";
                 
         }
         

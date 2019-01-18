@@ -16,18 +16,8 @@
   	},
   	"settings": {
 	  	"intro": "On this page you can manage settings that apply to all your Synology Surveillance Station devices.",
-	  	"mailsettings": "Mail settings",
-	  	"username": "Mail username",
-	  	"password": "Mail password",
-	  	"hostname": "SMTP server",
-	  	"port": "SMTP port",
-	  	"sender": "Sender address",
-	  	"testmailSettings": "Test mail settings",
-	  	"gmailexplanation": "If you wish to send through Gmail SMTP servers, you first need to allow less secure apps on Gmail via <a href='https://www.google.com/settings/security/lesssecureapps' target='_blank'>https://www.google.com/settings/security/lesssecureapps</a>",
 	  	"polling": "Polling",
-	  	"enablepolling": "Enable polling device status for triggers",
-	  	"encrypted_connection": "Use encrypted connection"
+	  	"enablepolling": "Enable polling device status for triggers"
   	},
-  	"not_all_vars_set": "Not all required variables for mailing have been set",
   	"snapshot_from": "Snapshot from camera"
 }
