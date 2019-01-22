@@ -28,6 +28,27 @@ module.exports = class SynologyDevice extends Homey.Device {
         this.log ("device_data = " + JSON.stringify (device_data));
         this.log ("settings = " + JSON.stringify(settings));
         
+        //migrate from older versions (< 1.1.0):
+		if (typeof device_data.username === "undefined" || device_data.username === '') {
+			
+			device_data.hostname = Homey.ManagerSettings.get('hostname');
+			device_data.username = Homey.ManagerSettings.get('username');
+			device_data.password = Homey.ManagerSettings.get('password');
+			device_data.port	 = Homey.ManagerSettings.get('port');
+	
+		}
+		
+		//migrate devices from < 1.2.6
+		if (typeof device_data.camid === "undefined" || device_data.camid === '') {
+		
+			device_data.camid = device_data.id;
+			console.log('Migrating device added before version 1.2.6: #' + device_data.id);
+			
+		}
+		
+        this.log ("device_data = " + JSON.stringify (device_data));
+        this.log ("settings = " + JSON.stringify(settings));
+        
         snappath = '/webapi/entry.cgi';
 		
 		enablepolling = Homey.ManagerSettings.get('enablepolling');
