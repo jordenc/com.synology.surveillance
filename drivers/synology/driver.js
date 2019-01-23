@@ -5,6 +5,7 @@ var http = require('http');
 var tempdevices;
 var snappath;
 var sid;
+var temp_data;
 
 module.exports = class SynologyDriver extends Homey.Driver {
 	
@@ -257,15 +258,17 @@ module.exports = class SynologyDriver extends Homey.Driver {
 				
 			};
 			
+			temp_data = data;
+								
 			login(options, function (sid) {
 				options.sid = sid;
-				//tempdata = data;
 				
 				execute_command (options, snappath, false, false, function (data) {
 					
 					console.log('data.data.camera = ' + JSON.stringify(data.data.cameras));
 					
 					tempdevices = data.data.cameras;
+
 					
 					socket.emit ('continue', null);
 					
@@ -280,7 +283,7 @@ module.exports = class SynologyDriver extends Homey.Driver {
     
 		socket.on('list_devices', function( data, callback ) {
 		
-			console.log("Synology Surveillance Station app - list_devices called" );
+			console.log("Synology Surveillance Station app - list_devices called");
 			
 			var new_devices = [];
 			
@@ -297,10 +300,11 @@ module.exports = class SynologyDriver extends Homey.Driver {
 							camid		: device.id,
 							ipaddress 	: device.host,
 							model		: device.model,
-							username	: data.username,
-							password	: data.password,
-							hostname	: data.hostname,
-							port		: data.port
+							test		: 'test123',
+							username	: temp_data.username,
+							password	: temp_data.password,
+							hostname	: temp_data.hostname,
+							port		: temp_data.port
 							
 						},
 						name: device.name

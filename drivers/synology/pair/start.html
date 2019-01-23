@@ -8,6 +8,8 @@ Homey.on('error', function( error ){
 	
 	if (error.code == 'EHOSTUNREACH' || error.code == 'ENOTFOUND') {
 		Homey.alert (__('pair.start.unabletoreach'), 'error');
+	} else {
+		Homey.alert ("Something went wrong", 'error');
 	}
 	
 });

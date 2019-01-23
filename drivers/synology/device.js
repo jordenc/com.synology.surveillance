@@ -31,6 +31,7 @@ module.exports = class SynologyDevice extends Homey.Device {
         //migrate from older versions (< 1.1.0):
 		if (typeof device_data.username === "undefined" || device_data.username === '') {
 			
+			console.log('Migrating device added before version 1.1.0: #' + device_data.id);
 			device_data.hostname = Homey.ManagerSettings.get('hostname');
 			device_data.username = Homey.ManagerSettings.get('username');
 			device_data.password = Homey.ManagerSettings.get('password');
