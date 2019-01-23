@@ -473,7 +473,7 @@ module.exports = class SynologyDevice extends Homey.Device {
 							            driver.triggersnapshot_taken( device, {snapshot: myImage}, {} );
 							        });
 							        
-									return callback( data.success );  
+									return callback( null, data.success );  
 	
 						    }).catch(console.error)
 								        
