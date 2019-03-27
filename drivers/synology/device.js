@@ -2,31 +2,28 @@
 
 const Homey = require('homey');
 var http = require('http');
-var device_data;
 var driver;
-let device = this;
 
 var snappath;
 var sid;
 var enablepolling;
 
+let myImage = new Homey.Image('jpg');
+var image_registered = 0;
+
 module.exports = class SynologyDevice extends Homey.Device {
 	
 	onInit() {
-	
+		
 		this.log('device init');
         this.log('name:', this.getName());
         this.log('class:', this.getClass());
         
-        device_data = this.getData();
-        device = this;
-        
-        let settings = this.getSettings();
+        var device_data = this.getData();
         
         driver = this.getDriver();
         
         this.log ("device_data = " + JSON.stringify (device_data));
-        this.log ("settings = " + JSON.stringify(settings));
         
         //migrate from older versions (< 1.1.0):
 		if (typeof device_data.username === "undefined" || device_data.username === '') {
@@ -48,7 +45,6 @@ module.exports = class SynologyDevice extends Homey.Device {
 		}
 		
         this.log ("device_data = " + JSON.stringify (device_data));
-        this.log ("settings = " + JSON.stringify(settings));
         
         snappath = '/webapi/entry.cgi';
 		
@@ -99,9 +95,9 @@ module.exports = class SynologyDevice extends Homey.Device {
 				basic		: true
 			};
 		
-			login(function (sid) {
+			login(device_data, function (sid) {
 				options.sid = sid;
-				execute_command (options, snappath, false, false, function (data) {
+				execute_command (device_data, options, snappath, false, false, function (data) {
 					
 					//first initialisation, only save the status, don't trigger
 					if (init) {
@@ -161,7 +157,7 @@ module.exports = class SynologyDevice extends Homey.Device {
 		
 		}
 		
-		function login(cmdcallback) {
+		function login(device_data, cmdcallback) {
 			
 			var options = {
 				api 		: 'SYNO.API.Auth',
@@ -173,7 +169,7 @@ module.exports = class SynologyDevice extends Homey.Device {
 				format		: 'sid'
 			};
 			
-			execute_command (options, '/webapi/auth.cgi', false, function(sid) {
+			execute_command (device_data, options, '/webapi/auth.cgi', false, function(sid) {
 				
 				cmdcallback(sid);
 				
@@ -181,8 +177,8 @@ module.exports = class SynologyDevice extends Homey.Device {
 			
 		}
 	
-		function execute_command (options, path, callback, logincall, outputcallback) {
-			
+		function execute_command (device_data, options, path, callback, logincall, outputcallback) {
+
 			console.log('[CMD] ' + options.method + ' called');
 			
 			var query = '?';
@@ -332,7 +328,7 @@ module.exports = class SynologyDevice extends Homey.Device {
 		
 		}
 	
-		function logout (credentials) {
+		function logout (device_data, credentials) {
 			
 			var options = {
 				api			: 'SYNO.API.Auth',
@@ -342,7 +338,7 @@ module.exports = class SynologyDevice extends Homey.Device {
 				sid			: credentials.sid
 			};
 			
-			execute_command (options, '/webapi/auth.cgi', false, 1);
+			execute_command (device_data, options, '/webapi/auth.cgi', false, 1);
 			
 		}
 
@@ -355,8 +351,9 @@ module.exports = class SynologyDevice extends Homey.Device {
 			.register()
 			.registerRunListener((args, state, callback) => {
 				
+				device_data = args.device.getData();
+				
 				console.log ("startRecording");
-				console.log ("args = " + JSON.stringify (args));
 				
 				var options = {
 					api 		: 'SYNO.SurveillanceStation.ExternalRecording',
@@ -366,9 +363,9 @@ module.exports = class SynologyDevice extends Homey.Device {
 					action		: 'start'
 				};
 			
-				login(function (sid) {
+				login(device_data, function (sid) {
 					options.sid = sid;
-					execute_command (options, snappath, callback);
+					execute_command (device_data, ptions, snappath, callback);
 				});
 			
 			});
@@ -377,6 +374,8 @@ module.exports = class SynologyDevice extends Homey.Device {
 		stopRecording
 			.register()
 			.registerRunListener((args, state, callback) => {
+				
+				device_data = args.device.getData();
 				
 				console.log ("stopRecording");
 				
@@ -388,9 +387,9 @@ module.exports = class SynologyDevice extends Homey.Device {
 					action		: 'stop'
 				};
 			
-				login(function (sid) {
+				login(device_data, function (sid) {
 					options.sid = sid;
-					execute_command (options, snappath, callback);
+					execute_command (device_data, options, snappath, callback);
 				});
 	
 			
@@ -400,6 +399,8 @@ module.exports = class SynologyDevice extends Homey.Device {
 		snapshot
 			.register()
 			.registerRunListener((args, state, callback) => {
+				
+				device_data = args.device.getData();
 				
 				console.log ("snapshot via " + snappath);
 				//console.log ("args = " + JSON.stringify (args));
@@ -413,9 +414,9 @@ module.exports = class SynologyDevice extends Homey.Device {
 					dsId		: '0'
 				};
 			
-				login(function (sid) {
+				login(device_data, function (sid) {
 					options.sid = sid;
-					execute_command (options, snappath, false, false, function (data) {
+					execute_command (device_data, options, snappath, false, false, function (data) {
 						
 						return callback( data.data.success );  
 						
@@ -431,6 +432,8 @@ module.exports = class SynologyDevice extends Homey.Device {
 			.register()
 			.registerRunListener((args, state, callback) => {
 				
+				device_data = args.device.getData();
+				
 				console.log ("snapshot via " + snappath);
 				
 				var options = {
@@ -442,41 +445,48 @@ module.exports = class SynologyDevice extends Homey.Device {
 					dsId		: '0'
 				};
 			
-				login(function (sid) {
+				login(device_data, function (sid) {
 					options.sid = sid;
-					execute_command (options, snappath, false, false, function (data) {
+					execute_command (device_data, options, snappath, false, false, function (data) {
 						
 						console.log("Snapshot complete: " + data.data.fileName);
 						
-						let myImage = new Homey.Image('jpg');
-					    
-					    var body = new Buffer(data.data.imageData, 'base64');
-					    
-				        myImage.setBuffer ( body );
-					    myImage.register()
-					        .then(() => {
-					
-					            // create a token & register it
-					            let myImageToken = new Homey.FlowToken('snapshot', {
-					                type: 'image',
-					                title: 'snapshot'
-					            })
-					            
-					            myImageToken
-					                .register()
-					                .then( () => {
-					                    myImageToken.setValue( myImage )
-					                        .then( console.log( 'setValue') )
-					                })
-								
-									driver.ready(() => {
-							            driver.triggersnapshot_taken( device, {snapshot: myImage}, {} );
-							        });
-							        
-									return callback( null, data.success );  
-	
-						    }).catch(console.error)
+						var body = new Buffer(data.data.imageData, 'base64');
+
+						if (image_registered == 1) {
+						
+							console.log("myImage update :)");	
+							myImage.update();
+						
+						} else {
+						
+						    myImage.setBuffer ( body );
+						    myImage.register()
+						        .then(() => {
+						
+									image_registered = 1;
+						            // create a token & register it
+						            let myImageToken = new Homey.FlowToken('snapshot', {
+						                type: 'image',
+						                title: 'snapshot'
+						            })
+						            
+						            myImageToken
+						                .register()
+						                .then( () => {
+						                    myImageToken.setValue( myImage )
+						                        .then( console.log( 'setValue') )
+						                })
+									
+										driver.ready(() => {
+								            driver.triggersnapshot_taken(args.device, {snapshot: myImage}, {} );
+								        });
 								        
+										return callback( null, data.success );  
+		
+							    }).catch(console.error)
+					
+						}
 											
 					});	
 				});
@@ -487,7 +497,9 @@ module.exports = class SynologyDevice extends Homey.Device {
 		enable
 			.register()
 			.registerRunListener((args, state, callback) => {
-				
+			
+				device_data = args.device.getData();
+					
 				console.log ("enable");
 				
 				var options = {
@@ -497,9 +509,9 @@ module.exports = class SynologyDevice extends Homey.Device {
 					idList		: device_data.camid
 				};
 			
-				login(function (sid) {
+				login(device_data, function (sid) {
 					options.sid = sid;
-					execute_command (options, snappath, false, false, function (data) {
+					execute_command (device_data, options, snappath, false, false, function (data) {
 						
 						if (data.success == true) callback (null, true); else callback (data.error.code, false);
 						
@@ -516,7 +528,9 @@ module.exports = class SynologyDevice extends Homey.Device {
 		disable
 			.register()
 			.registerRunListener((args, state, callback) => {
-				
+			
+				device_data = args.device.getData();
+					
 				console.log ("disable");
 				
 				var options = {
@@ -526,9 +540,9 @@ module.exports = class SynologyDevice extends Homey.Device {
 					idList		: device_data.camid
 				};
 			
-				login(function (sid) {
+				login(device_data, function (sid) {
 					options.sid = sid;
-					execute_command (options, snappath, false, false, function (data) {
+					execute_command (device_data, options, snappath, false, false, function (data) {
 						
 						if (data.data.success == true) callback (null, true); else callback (data.error.code, false);
 						
@@ -548,6 +562,8 @@ module.exports = class SynologyDevice extends Homey.Device {
 		    .register()
 		    .registerRunListener(( args, state, callback ) => {
 		
+				device_data = args.device.getData();
+				
 				console.log ("recording?");
 				
 				var options = {
@@ -557,9 +573,9 @@ module.exports = class SynologyDevice extends Homey.Device {
 					cameraIds	: device_data.camid
 				};
 			
-				login(function (sid) {
+				login(device_data, function (sid) {
 					options.sid = sid;
-					execute_command (options, snappath, false, false, function (data) {
+					execute_command (device_data, options, snappath, false, false, function (data) {
 						
 						if (data.data.cameras[0].recStatus != 0) callback (null, true); else callback (null, false);
 						
@@ -574,6 +590,8 @@ module.exports = class SynologyDevice extends Homey.Device {
 		    .register()
 		    .registerRunListener(( args, state, callback ) => {
 			
+				device_data = args.device.getData();
+				
 				console.log ("available?");
 				var options = {
 					api 		: 'SYNO.SurveillanceStation.Camera',
@@ -582,9 +600,9 @@ module.exports = class SynologyDevice extends Homey.Device {
 					cameraIds	: device_data.camid
 				};
 			
-				login(function (sid) {
+				login(device_data, function (sid) {
 					options.sid = sid;
-					execute_command (options, snappath, false, false, function (data) {
+					execute_command (device_data, options, snappath, false, false, function (data) {
 						
 						if (data.data.cameras[0].camStatus == 1) callback (null, true); else callback (null, false);
 						

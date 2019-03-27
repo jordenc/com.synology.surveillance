@@ -300,7 +300,6 @@ module.exports = class SynologyDriver extends Homey.Driver {
 							camid		: device.id,
 							ipaddress 	: device.host,
 							model		: device.model,
-							test		: 'test123',
 							username	: temp_data.username,
 							password	: temp_data.password,
 							hostname	: temp_data.hostname,

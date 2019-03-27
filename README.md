@@ -34,6 +34,10 @@ The following cards are available:
 Use at your own risk, I accept no responsibility for any damages caused by using this script.
 
 # Changelog
+
+**Version 2.0.1**
+- Fixed a bug when handling multiple webcams
+
 **Version 2.0.0**
 - Homey SDK2 version
 - Snapshot as token will now take a snapshot as a Homey image token (usable in other apps like email-sender, Telegram etc)
