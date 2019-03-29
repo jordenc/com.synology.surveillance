@@ -53,7 +53,7 @@ module.exports = class SynologyDevice extends Homey.Device {
 		console.log("enablepolling = " + enablepolling);
 		
 		if (enablepolling) setTimeout(function() {
-			polling (true);
+			polling (device_data, true);
 		}, 15000);
 	
 		Homey.ManagerSettings.on('set', function(){
@@ -67,7 +67,7 @@ module.exports = class SynologyDevice extends Homey.Device {
 				if (temp_enablepolling) {
 					
 					setTimeout(function() {
-						polling (true);
+						polling (device_data, true);
 					}, 15000);
 					
 				}
@@ -78,14 +78,14 @@ module.exports = class SynologyDevice extends Homey.Device {
 			
 		});
 	
-		function polling(init) {
+		function polling(device_data, init) {
 			
 			//if (enablepolling) setTimeout(function() {polling}, 15000);
 			if (enablepolling) setTimeout(function() {
-				polling (false);
+				polling (device_data, false);
 			}, 15000);
-				
-			console.log ('checking device ' + JSON.stringify (device));
+			
+			console.log ('checking device ' + JSON.stringify (device_data));
 			
 			var options = {
 				api 		: 'SYNO.SurveillanceStation.Camera',
