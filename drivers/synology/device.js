@@ -365,7 +365,7 @@ module.exports = class SynologyDevice extends Homey.Device {
 			
 				login(device_data, function (sid) {
 					options.sid = sid;
-					execute_command (device_data, ptions, snappath, callback);
+					execute_command (device_data, options, snappath, callback);
 				});
 			
 			});

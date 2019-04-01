@@ -35,6 +35,9 @@ Use at your own risk, I accept no responsibility for any damages caused by using
 
 # Changelog
 
+**Version 2.0.3**
+- Typofix
+
 **Version 2.0.2**
 - Fixed a bug that would crash the app if statuschecks were enabled.
 
